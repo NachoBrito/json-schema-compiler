@@ -13,7 +13,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>17</maven.compiler.release>
+    <maven.compiler.release>22</maven.compiler.release>
+    <json-schema-ref-parser-jvm.version>0.8.7</json-schema-ref-parser-jvm.version>
   </properties>
 
   <dependencyManagement>
@@ -39,6 +40,11 @@
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.github.zenwave360</groupId>
+      <artifactId>json-schema-ref-parser-jvm</artifactId>
+      <version>${json-schema-ref-parser-jvm.version}</version>
     </dependency>
   </dependencies>
 
@@ -86,5 +92,16 @@
         </plugin>
       </plugins>
     </pluginManagement>
+      <plugins>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <configuration>
+                  <source>22</source>
+                  <target>22</target>
+                  <compilerArgs>--enable-preview</compilerArgs>
+              </configuration>
+          </plugin>
+      </plugins>
   </build>
 </project>
