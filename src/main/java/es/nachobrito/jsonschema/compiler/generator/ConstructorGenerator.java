@@ -10,9 +10,9 @@ import static java.lang.constant.ClassDesc.of;
 import static java.lang.constant.ConstantDescs.CD_void;
 import static java.lang.constant.ConstantDescs.INIT_NAME;
 
-public class ConstructorGenerator implements ModelGenerator{
+record ConstructorGenerator(ClassDesc classDesc, ClassBuilder classBuilder, SortedMap<String, ClassDesc> properties) implements ModelGenerator{
     @Override
-    public void generatePart(ClassDesc classDesc, ClassBuilder classBuilder, SortedMap<String, ClassDesc> properties) {
+    public void generatePart() {
         var propertyTypes = properties.values().toArray(ClassDesc[]::new);
 
         classBuilder.withMethodBody(INIT_NAME, MethodTypeDesc.of(CD_void, propertyTypes), ACC_PUBLIC,

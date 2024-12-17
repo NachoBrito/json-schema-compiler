@@ -17,14 +17,6 @@ import static java.lang.constant.ClassDesc.of;
 
 public class Compiler {
 
-    private static final List<ModelGenerator> generators = List.of(
-            new ConstructorGenerator(),
-            new EqualsGenerator(),
-            new HashCodeGenerator(),
-            new PropertiesGenerator(),
-            new ToStringGenerator()
-    );
-
     public void compile(URI schemaURI, Path destinationPath) {
         var schemaReader = SchemaReader.of(schemaURI);
         var className = schemaReader.getClassName();
@@ -44,7 +36,7 @@ public class Compiler {
                 .withSuperclass(of("java.lang.Record"));
 
         var classDesc = of(className);
-        generators.forEach(it -> it.generatePart(classDesc, classBuilder, properties));
+        ModelGenerator.of(classDesc,classBuilder,properties).forEach(ModelGenerator::generatePart);
     }
 
 

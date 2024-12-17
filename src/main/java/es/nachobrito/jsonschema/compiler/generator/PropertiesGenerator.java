@@ -7,9 +7,9 @@ import java.util.SortedMap;
 
 import static java.lang.classfile.ClassFile.*;
 
-public class PropertiesGenerator implements ModelGenerator{
+record PropertiesGenerator(ClassDesc classDesc, ClassBuilder classBuilder, SortedMap<String, ClassDesc> properties)  implements ModelGenerator{
     @Override
-    public void generatePart(ClassDesc classDesc, ClassBuilder classBuilder, SortedMap<String, ClassDesc> properties) {
+    public void generatePart() {
         properties.entrySet().forEach(entry -> buildProperty(classDesc, entry.getKey(), entry.getValue(), classBuilder));
     }
 

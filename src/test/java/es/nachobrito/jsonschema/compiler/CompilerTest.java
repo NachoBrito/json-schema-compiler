@@ -49,7 +49,7 @@ public class CompilerTest {
         var constructors = cls.getDeclaredConstructors();
         assertEquals(1, constructors.length);
         var methods = cls.getDeclaredMethods();
-        assertEquals(3, methods.length);
+        assertEquals(4, methods.length);
 
         var person = constructors[0].newInstance(47, "Nacho", "Brito");
         assertNotNull(person);
