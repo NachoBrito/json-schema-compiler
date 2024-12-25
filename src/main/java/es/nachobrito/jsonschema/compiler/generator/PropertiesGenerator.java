@@ -1,11 +1,11 @@
 package es.nachobrito.jsonschema.compiler.generator;
 
+import static java.lang.classfile.ClassFile.*;
+
 import java.lang.classfile.ClassBuilder;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.MethodTypeDesc;
 import java.util.SortedMap;
-
-import static java.lang.classfile.ClassFile.*;
 
 record PropertiesGenerator(ClassDesc classDesc, ClassBuilder classBuilder, SortedMap<String, ClassDesc> properties)  implements ModelGenerator{
     @Override

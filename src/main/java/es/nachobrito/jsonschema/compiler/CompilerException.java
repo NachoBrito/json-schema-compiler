@@ -2,12 +2,12 @@ package es.nachobrito.jsonschema.compiler;
 
 import java.io.IOException;
 
-public class CompilerException extends RuntimeException{
-    public CompilerException(IOException e) {
-        super(e);
-    }
+public class CompilerException extends RuntimeException {
+  public CompilerException(IOException e) {
+    super(e);
+  }
 
-    public CompilerException(String message) {
-        super(message);
-    }
+  public CompilerException(String message) {
+    super(message);
+  }
 }

@@ -17,27 +17,27 @@ import static java.lang.constant.ClassDesc.of;
 
 public class Compiler {
 
-    public void compile(URI schemaURI, Path destinationPath) {
-        var schemaReader = SchemaReader.of(schemaURI);
-        var className = schemaReader.getClassName();
-        var properties = schemaReader.getProperties();
+  public void compile(URI schemaURI, Path destinationPath) {
+    var schemaReader = SchemaReader.of(schemaURI);
+    var className = schemaReader.getClassName();
+    var properties = schemaReader.getProperties();
 
-        try {
-            ClassFile.of().buildTo(destinationPath, of(className), classBuilder -> writeRecord(className, classBuilder, properties));
-        } catch (IOException e) {
-            throw new CompilerException(e);
-        }
+    try {
+      ClassFile.of()
+          .buildTo(
+              destinationPath,
+              of(className),
+              classBuilder -> writeRecord(className, classBuilder, properties));
+    } catch (IOException e) {
+      throw new CompilerException(e);
     }
+  }
 
+  private void writeRecord(
+      String className, ClassBuilder classBuilder, SortedMap<String, ClassDesc> properties) {
+    classBuilder.withFlags(ACC_PUBLIC | ACC_FINAL).withSuperclass(of("java.lang.Record"));
 
-    private void writeRecord(String className, ClassBuilder classBuilder, SortedMap<String, ClassDesc> properties) {
-        classBuilder
-                .withFlags(ACC_PUBLIC | ACC_FINAL)
-                .withSuperclass(of("java.lang.Record"));
-
-        var classDesc = of(className);
-        ModelGenerator.of(classDesc,classBuilder,properties).forEach(ModelGenerator::generatePart);
-    }
-
-
+    var classDesc = of(className);
+    ModelGenerator.of(classDesc, classBuilder, properties).forEach(ModelGenerator::generatePart);
+  }
 }

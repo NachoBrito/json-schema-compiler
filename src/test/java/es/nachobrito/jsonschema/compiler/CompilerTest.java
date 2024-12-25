@@ -49,7 +49,7 @@ public class CompilerTest {
         var constructors = cls.getDeclaredConstructors();
         assertEquals(1, constructors.length);
         var methods = cls.getDeclaredMethods();
-        assertEquals(4, methods.length);
+        assertEquals(5, methods.length);
 
         var person = constructors[0].newInstance(47, "Nacho", "Brito");
         assertNotNull(person);
@@ -57,10 +57,22 @@ public class CompilerTest {
         Arrays.sort(methods, 0, methods.length, comparing(m -> m.getName()));
         assertEquals(47, methods[0].invoke(person));
         assertEquals("Nacho", methods[1].invoke(person));
-        assertEquals("Brito", methods[2].invoke(person));
+        assertEquals("Brito", methods[3].invoke(person));
 
-        var another = new Person(47, "Nacho", "Brito");
-        assertEquals(another.toString(), person.toString());
+        var expected = new Person(47, "Nacho", "Brito");
+        assertEquals(expected.toString(), person.toString());
+
+        var person2 = constructors[0].newInstance(47, "Nacho", "Brito");
+        assertEquals(person2.hashCode(), person.hashCode());
+
+        var person3 = constructors[0].newInstance(48, "Nacho", "Brito");
+        assertNotEquals(person3.hashCode(), person.hashCode());
+
+        var person4 = constructors[0].newInstance(47, "Pancho", "Brito");
+        assertNotEquals(person4.hashCode(), person.hashCode());
+
+        var person5 = constructors[0].newInstance(47, "Nacho", "Lopez");
+        assertNotEquals(person5.hashCode(), person.hashCode());
 
         //System.out.printf("Person created %s%n", person);
     }

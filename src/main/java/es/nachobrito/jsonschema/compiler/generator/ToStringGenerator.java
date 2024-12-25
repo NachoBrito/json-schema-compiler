@@ -1,15 +1,15 @@
 package es.nachobrito.jsonschema.compiler.generator;
 
+import static java.lang.classfile.ClassFile.ACC_FINAL;
+import static java.lang.classfile.ClassFile.ACC_PUBLIC;
+import static java.lang.constant.ClassDesc.of;
+import static java.lang.constant.ConstantDescs.*;
+
 import java.lang.classfile.ClassBuilder;
 import java.lang.constant.*;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
-
-import static java.lang.classfile.ClassFile.ACC_FINAL;
-import static java.lang.classfile.ClassFile.ACC_PUBLIC;
-import static java.lang.constant.ClassDesc.of;
-import static java.lang.constant.ConstantDescs.*;
 
 record ToStringGenerator(ClassDesc classDesc, ClassBuilder classBuilder,
                          SortedMap<String, ClassDesc> properties) implements ModelGenerator {
@@ -17,10 +17,6 @@ record ToStringGenerator(ClassDesc classDesc, ClassBuilder classBuilder,
     public void generatePart() {
         //loosely based on:
         //https://github.com/openjdk/babylon/blob/490332b12e479d8a0c164cb32dab1def982d8fce/hat/hat/src/main/java/hat/ifacemapper/ByteCodeGenerator.java#L36
-        var propertyNames = properties.keySet().stream().collect(Collectors.joining(";"));
-        var getters = properties.entrySet().stream()
-                .map(entry -> MethodHandleDesc.ofField(DirectMethodHandleDesc.Kind.GETTER, classDesc, entry.getKey(), entry.getValue()))
-                .toList();
         var nonArrayGetters = properties.entrySet().stream()
                 .filter(entry -> !entry.getValue().isArray())
                 .map(entry -> MethodHandleDesc.ofField(DirectMethodHandleDesc.Kind.GETTER, classDesc, entry.getKey(), entry.getValue()))

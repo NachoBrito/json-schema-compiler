@@ -1,8 +1,10 @@
 package es.nachobrito.jsonschema.compiler;
 
+import static java.lang.constant.ConstantDescs.*;
+import static java.util.stream.Collectors.toMap;
+
 import io.zenwave360.jsonrefparser.$RefParser;
 import io.zenwave360.jsonrefparser.$Refs;
-
 import java.io.IOException;
 import java.lang.constant.ClassDesc;
 import java.net.URI;
@@ -10,9 +12,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import static java.lang.constant.ConstantDescs.*;
-import static java.util.stream.Collectors.toMap;
 
 public class JsonSchemaReader implements SchemaReader {
     final Map<String, Object> models;
