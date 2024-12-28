@@ -26,6 +26,7 @@ import java.lang.classfile.ClassBuilder;
 import java.lang.classfile.ClassFile;
 import java.lang.constant.ClassDesc;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.SortedMap;
 
 public class Compiler {
@@ -61,7 +62,7 @@ public class Compiler {
             .getPackageName()
             .map(pkg -> "%s.%s".formatted(pkg, schema.className()))
             .orElse(schema.className());
-    var destinationPath = inputParameters.getOutputFolder();
+    var destinationPath = buildDestinationPath(className);
     var properties = schema.properties();
 
     try {
@@ -73,6 +74,13 @@ public class Compiler {
     } catch (IOException e) {
       throw new CompilerException(e);
     }
+  }
+
+  private Path buildDestinationPath(String className) {
+    var parts = "%s.class".formatted(className.replace('.', '/'));
+    var path = Path.of(inputParameters.getOutputFolder().toAbsolutePath().toString(), parts);
+    path.getParent().toFile().mkdirs();
+    return path;
   }
 
   private void writeRecord(

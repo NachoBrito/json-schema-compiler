@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import es.nachobrito.jsonschema.compiler.domain.Compiler;
 import es.nachobrito.jsonschema.compiler.domain.InputParametersRecord;
 import es.nachobrito.jsonschema.compiler.infrastructure.jsonrefparser.JsonSchemaReader;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
@@ -27,20 +28,12 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.junit.jupiter.api.BeforeAll;
+import java.util.Comparator;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public class CompilerTest {
-  /**
-   * @param filePath
-   * @param expectedName
-   * @param initArgs
-   * @return
-   * @throws IOException
-   * @throws ClassNotFoundException
-   * @throws InvocationTargetException
-   * @throws InstantiationException
-   * @throws IllegalAccessException
-   */
+
   protected static Object instantiateSampleSchema(
       String filePath, String expectedName, Object... initArgs)
       throws IOException,
@@ -50,71 +43,43 @@ public class CompilerTest {
           IllegalAccessException {
     var cls = compileSampleSchemaFromFile(filePath, expectedName);
     var constructors = cls.getDeclaredConstructors();
-    var person = constructors[0].newInstance(initArgs);
-    return person;
+    return constructors[0].newInstance(initArgs);
   }
 
-  /**
-   * @param filePath
-   * @param expectedName
-   * @return
-   * @throws IOException
-   * @throws ClassNotFoundException
-   */
   protected static Class<?> compileSampleSchemaFromFile(String filePath, String expectedName)
       throws IOException, ClassNotFoundException {
     var uri = URI.create(filePath);
-    var destURL =
-        Path.of(CompilerSmokeTest.TARGET_GENERATED_CLASSES)
-            .toAbsolutePath()
-            .toFile()
-            .toURI()
-            .toURL();
-    var destPath =
-        Path.of("%s/%s.class".formatted(CompilerSmokeTest.TARGET_GENERATED_CLASSES, expectedName));
+    Path destPath = Path.of(CompilerSmokeTest.TARGET_GENERATED_CLASSES);
+    var destURL = destPath.toAbsolutePath().toFile().toURI().toURL();
     var compiler = new Compiler(new InputParametersRecord(destPath, ""), new JsonSchemaReader());
-
-    Files.deleteIfExists(destPath);
     compiler.compile(uri);
     assertTrue(destPath.toFile().exists());
 
-    var cls = new URLClassLoader(new URL[] {destURL}).loadClass(expectedName);
-    return cls;
+    return new URLClassLoader(new URL[] {destURL}).loadClass(expectedName);
   }
 
-  /**
-   * @param jsonSchema
-   * @param expectedName
-   * @return
-   * @throws IOException
-   * @throws ClassNotFoundException
-   */
   protected static Class<?> compileSampleSchemaFromString(String jsonSchema, String expectedName)
-          throws IOException, ClassNotFoundException {
-    var destURL =
-            Path.of(CompilerSmokeTest.TARGET_GENERATED_CLASSES)
-                    .toAbsolutePath()
-                    .toFile()
-                    .toURI()
-                    .toURL();
-    var destPath =
-            Path.of("%s/%s.class".formatted(CompilerSmokeTest.TARGET_GENERATED_CLASSES, expectedName));
+      throws IOException, ClassNotFoundException {
+    Path destPath = Path.of(CompilerSmokeTest.TARGET_GENERATED_CLASSES);
+    var destURL = destPath.toAbsolutePath().toFile().toURI().toURL();
     var compiler = new Compiler(new InputParametersRecord(destPath, ""), new JsonSchemaReader());
-
-    Files.deleteIfExists(destPath);
     compiler.compile(jsonSchema);
     assertTrue(destPath.toFile().exists());
 
-    var cls = new URLClassLoader(new URL[] {destURL}).loadClass(expectedName);
-    return cls;
+    return new URLClassLoader(new URL[] {destURL}).loadClass(expectedName);
   }
 
-  @BeforeAll
-  static void beforeAll() throws IOException {
+  @BeforeEach
+  void beforeAll() throws IOException {
     Files.createDirectories(Path.of(CompilerSmokeTest.TARGET_GENERATED_CLASSES));
   }
 
-  static void afterAll() throws IOException {
-    Files.deleteIfExists(Path.of(CompilerSmokeTest.TARGET_GENERATED_CLASSES));
+  @AfterEach
+  void afterAll() throws IOException {
+    var pathToBeDeleted = Path.of(CompilerSmokeTest.TARGET_GENERATED_CLASSES);
+    Files.walk(pathToBeDeleted)
+        .sorted(Comparator.reverseOrder())
+        .map(Path::toFile)
+        .forEach(File::delete);
   }
 }

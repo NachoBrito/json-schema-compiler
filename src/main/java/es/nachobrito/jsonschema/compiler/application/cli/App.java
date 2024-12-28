@@ -16,9 +16,23 @@
 
 package es.nachobrito.jsonschema.compiler.application.cli;
 
-/** Hello world! */
+import com.beust.jcommander.JCommander;
+import es.nachobrito.jsonschema.compiler.application.jcommander.Params;
+import es.nachobrito.jsonschema.compiler.domain.Compiler;
+import es.nachobrito.jsonschema.compiler.infrastructure.jsonrefparser.JsonSchemaReader;
+
+import java.net.URI;
+
 public class App {
   public static void main(String[] args) {
-    System.out.println("Hello World!");
+    var params = new Params();
+    JCommander.newBuilder()
+            .addObject(params)
+            .build()
+            .parse(args);
+
+    var compiler = new Compiler(params, new JsonSchemaReader());
+    var uri = URI.create(params.getSchemaFile());
+    compiler.compile(uri);
   }
 }
