@@ -1,24 +1,38 @@
 package es.nachobrito.jsonschema.compiler;
 
-import es.nachobrito.jsonschema.compiler.generator.*;
+import static java.lang.classfile.ClassFile.ACC_FINAL;
+import static java.lang.classfile.ClassFile.ACC_PUBLIC;
+import static java.lang.constant.ClassDesc.of;
 
+import es.nachobrito.jsonschema.compiler.generator.*;
 import java.io.IOException;
 import java.lang.classfile.ClassBuilder;
 import java.lang.classfile.ClassFile;
 import java.lang.constant.ClassDesc;
 import java.net.URI;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.SortedMap;
 
-import static java.lang.classfile.ClassFile.ACC_FINAL;
-import static java.lang.classfile.ClassFile.ACC_PUBLIC;
-import static java.lang.constant.ClassDesc.of;
-
 public class Compiler {
+  private final Path destinationPath;
+  private final String packageName;
 
-  public void compile(URI schemaURI, Path destinationPath) {
+  public Compiler(Path destinationPath, String packageName) {
+    this.destinationPath = destinationPath;
+    this.packageName = packageName;
+  }
+
+  public void compile(URI schemaURI) {
     var schemaReader = SchemaReader.of(schemaURI);
+    compile(schemaReader);
+  }
+
+  public void compile(String jsonSchema){
+    var schemaReader = SchemaReader.of(jsonSchema);
+    compile(schemaReader);
+  }
+
+  private void compile(SchemaReader schemaReader) {
     var className = schemaReader.getClassName();
     var properties = schemaReader.getProperties();
 

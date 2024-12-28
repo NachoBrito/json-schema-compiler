@@ -6,11 +6,17 @@ import java.util.SortedMap;
 
 public interface SchemaReader {
 
+
+
   String getClassName();
 
   SortedMap<String, ClassDesc> getProperties();
 
   static SchemaReader of(URI uri) {
     return new JsonSchemaReader(uri);
+  }
+
+  static SchemaReader of(String jsonSchema) {
+    return new JsonSchemaReader(jsonSchema);
   }
 }

@@ -1,14 +1,14 @@
 package es.nachobrito.jsonschema.compiler.generator;
 
-import java.lang.classfile.ClassBuilder;
-import java.lang.constant.ClassDesc;
-import java.lang.constant.MethodTypeDesc;
-import java.util.SortedMap;
-
 import static java.lang.classfile.ClassFile.ACC_PUBLIC;
 import static java.lang.constant.ClassDesc.of;
 import static java.lang.constant.ConstantDescs.CD_void;
 import static java.lang.constant.ConstantDescs.INIT_NAME;
+
+import java.lang.classfile.ClassBuilder;
+import java.lang.constant.ClassDesc;
+import java.lang.constant.MethodTypeDesc;
+import java.util.SortedMap;
 
 record ConstructorGenerator(
     ClassDesc classDesc, ClassBuilder classBuilder, SortedMap<String, ClassDesc> properties)

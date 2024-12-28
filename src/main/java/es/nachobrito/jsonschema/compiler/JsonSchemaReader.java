@@ -20,6 +20,11 @@ public class JsonSchemaReader implements SchemaReader {
         this.models = loadModels(uri);
     }
 
+    public JsonSchemaReader(String jsonSchema) {
+        this.models = loadModels(jsonSchema);
+    }
+
+
     @Override
     public String getClassName() {
         return String.valueOf(models.getOrDefault("title", "UnknownClassName"));
@@ -53,12 +58,22 @@ public class JsonSchemaReader implements SchemaReader {
     private static Map<String, Object> loadModels(URI uri) {
         try {
             $RefParser parser = new $RefParser(uri);
-            $Refs refs = null;
-            refs = parser.parse().dereference().mergeAllOf().getRefs();
+            $Refs refs = parser.parse().dereference().mergeAllOf().getRefs();
             return refs.schema();
-
         } catch (IOException e) {
             throw new CompilerException(e);
         }
+    }
+
+
+    private Map<String, Object> loadModels(String jsonSchema) {
+        try {
+            $RefParser parser = new $RefParser(jsonSchema);
+            $Refs refs = parser.parse().dereference().mergeAllOf().getRefs();
+            return refs.schema();
+        } catch (IOException e) {
+            throw new CompilerException(e);
+        }
+
     }
 }

@@ -21,7 +21,65 @@ public class CompilerSmokeTest extends CompilerTest{
           InvocationTargetException,
           InstantiationException,
           IllegalAccessException {
-    var cls = compileSampleSchema("classpath:test-schemas/Person.json", "Person");
+    var cls = compileSampleSchemaFromFile("classpath:test-schemas/Person.json", "Person");
+    assertNotNull(cls);
+    var fields = cls.getDeclaredFields();
+    assertEquals(3, fields.length);
+    var constructors = cls.getDeclaredConstructors();
+    assertEquals(1, constructors.length);
+    var methods = cls.getDeclaredMethods();
+    assertEquals(6, methods.length);
+
+    var person = constructors[0].newInstance(47, "Nacho", "Brito");
+    assertNotNull(person);
+
+    Arrays.sort(methods, 0, methods.length, comparing(m -> m.getName()));
+    /*
+    Expected order:
+    0: public java.lang.Integer Person.age()
+    1: public final boolean Person.equals(java.lang.Object)
+    2: public java.lang.String Person.firstName()
+    3: public final int Person.hashCode()
+    4: public java.lang.String Person.lastName()
+    5: public final java.lang.String Person.toString()
+     */
+    assertEquals(47, methods[0].invoke(person));
+    assertEquals("Nacho", methods[2].invoke(person));
+    assertEquals("Brito", methods[4].invoke(person));
+
+    // System.out.printf("Person created %s%n", person);
+  }
+  @Test
+  void expectSimpleStringCompiled()
+      throws IOException,
+          ClassNotFoundException,
+          InvocationTargetException,
+          InstantiationException,
+          IllegalAccessException {
+    var jsonSchema = """
+{
+  "$id": "https://example.com/person.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Person",
+  "type": "object",
+  "properties": {
+    "firstName": {
+      "type": "string",
+      "description": "The person's first name."
+    },
+    "lastName": {
+      "type": "string",
+      "description": "The person's last name."
+    },
+    "age": {
+      "description": "Age in years which must be equal to or greater than zero.",
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}
+""";
+    var cls = compileSampleSchemaFromString(jsonSchema, "Person");
     assertNotNull(cls);
     var fields = cls.getDeclaredFields();
     assertEquals(3, fields.length);
@@ -57,7 +115,7 @@ public class CompilerSmokeTest extends CompilerTest{
           InvocationTargetException,
           InstantiationException,
           IllegalAccessException {
-    var cls = compileSampleSchema("classpath:test-schemas/Person.json", "Person");
+    var cls = compileSampleSchemaFromFile("classpath:test-schemas/Person.json", "Person");
     var constructors = cls.getDeclaredConstructors();
     var person = constructors[0].newInstance(47, "Nacho", "Brito");
 
