@@ -14,7 +14,14 @@
  *    limitations under the License.
  */
 
-package es.nachobrito.jsonschema.compiler;
+package es.nachobrito.jsonschema.compiler.domain;
 
-public record Person(Integer age, String firstName, String lastName) {
+
+import java.net.URI;
+
+public interface SchemaReader {
+
+  Schema read(URI uri);
+
+  Schema read(String jsonSchema);
 }

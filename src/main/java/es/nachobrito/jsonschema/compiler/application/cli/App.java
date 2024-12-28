@@ -14,7 +14,11 @@
  *    limitations under the License.
  */
 
-package es.nachobrito.jsonschema.compiler;
+package es.nachobrito.jsonschema.compiler.application.cli;
 
-public record Person(Integer age, String firstName, String lastName) {
+/** Hello world! */
+public class App {
+  public static void main(String[] args) {
+    System.out.println("Hello World!");
+  }
 }

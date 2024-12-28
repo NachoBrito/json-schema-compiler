@@ -14,7 +14,9 @@
  *    limitations under the License.
  */
 
-package es.nachobrito.jsonschema.compiler;
+package es.nachobrito.jsonschema.compiler.domain;
 
-public record Person(Integer age, String firstName, String lastName) {
-}
+import java.lang.constant.ClassDesc;
+import java.util.SortedMap;
+
+public record Schema(String className, SortedMap<String, ClassDesc> properties) {}

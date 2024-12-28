@@ -14,7 +14,16 @@
  *    limitations under the License.
  */
 
-package es.nachobrito.jsonschema.compiler;
+package es.nachobrito.jsonschema.compiler.domain;
 
-public record Person(Integer age, String firstName, String lastName) {
+import java.io.IOException;
+
+public class CompilerException extends RuntimeException {
+  public CompilerException(IOException e) {
+    super(e);
+  }
+
+  public CompilerException(String message) {
+    super(message);
+  }
 }
