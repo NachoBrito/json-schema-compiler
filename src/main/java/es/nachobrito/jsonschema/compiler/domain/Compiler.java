@@ -26,31 +26,42 @@ import java.lang.classfile.ClassBuilder;
 import java.lang.classfile.ClassFile;
 import java.lang.constant.ClassDesc;
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.SortedMap;
 
 public class Compiler {
-  private final Path destinationFolder;
-  private final String packageName;
+  private final InputParameters inputParameters;
   private final SchemaReader schemaReader;
 
-  public Compiler(Path destinationFolder, String packageName, SchemaReader schemaReader) {
-    this.destinationFolder = destinationFolder;
-    this.packageName = packageName;
+  public Compiler(InputParameters inputParameters, SchemaReader schemaReader) {
+    this.inputParameters = inputParameters;
     this.schemaReader = schemaReader;
   }
 
+  /**
+   * Compiles the schema defined in a file, represented by the schemaURI param
+   *
+   * @param schemaURI the uri of the file to compile
+   */
   public void compile(URI schemaURI) {
     compile(schemaReader.read(schemaURI));
   }
 
+  /**
+   * Compiles the schema defined in a String with the JSON
+   *
+   * @param jsonSchema the schema definition
+   */
   public void compile(String jsonSchema) {
     compile(schemaReader.read(jsonSchema));
   }
 
   private void compile(Schema schema) {
-    var className = this.packageName + schema.className();
-    var destinationPath = destinationFolder;
+    var className =
+        inputParameters
+            .getPackageName()
+            .map(pkg -> "%s.%s".formatted(pkg, schema.className()))
+            .orElse(schema.className());
+    var destinationPath = inputParameters.getOutputFolder();
     var properties = schema.properties();
 
     try {

@@ -15,10 +15,11 @@
  */
 package es.nachobrito.jsonschema.compiler;
 
-import es.nachobrito.jsonschema.compiler.domain.Compiler;
-import es.nachobrito.jsonschema.compiler.infrastructure.jsonrefparser.JsonSchemaReader;
-import org.junit.jupiter.api.BeforeAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import es.nachobrito.jsonschema.compiler.domain.Compiler;
+import es.nachobrito.jsonschema.compiler.domain.InputParametersRecord;
+import es.nachobrito.jsonschema.compiler.infrastructure.jsonrefparser.JsonSchemaReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
@@ -26,8 +27,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeAll;
 
 public class CompilerTest {
   /**
@@ -72,7 +72,7 @@ public class CompilerTest {
             .toURL();
     var destPath =
         Path.of("%s/%s.class".formatted(CompilerSmokeTest.TARGET_GENERATED_CLASSES, expectedName));
-    var compiler = new Compiler(destPath, "", new JsonSchemaReader());
+    var compiler = new Compiler(new InputParametersRecord(destPath, ""), new JsonSchemaReader());
 
     Files.deleteIfExists(destPath);
     compiler.compile(uri);
@@ -99,7 +99,7 @@ public class CompilerTest {
                     .toURL();
     var destPath =
             Path.of("%s/%s.class".formatted(CompilerSmokeTest.TARGET_GENERATED_CLASSES, expectedName));
-    var compiler = new Compiler(destPath, "", new JsonSchemaReader());
+    var compiler = new Compiler(new InputParametersRecord(destPath, ""), new JsonSchemaReader());
 
     Files.deleteIfExists(destPath);
     compiler.compile(jsonSchema);
