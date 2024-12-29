@@ -22,6 +22,8 @@ jobs:
 
       - name: Build native image
         run: |
+          git config --global user.email "$GITHUB_TRIGGERING_ACTOR@github.action"
+          git config --global user.name $GITHUB_TRIGGERING_ACTOR          
           ./create-image.sh ${{ matrix.os }}
 
 #      - name: Commit & Push changes
