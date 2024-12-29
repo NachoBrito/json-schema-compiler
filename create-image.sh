@@ -14,10 +14,26 @@
 #    limitations under the License.
 #
 
+IMAGE_NAME="json-schema-compiler"
+WORK_FOLDER="./target"
+RELEASES_FOLDER="./bin"
+
 #see: https://graalvm.github.io/native-build-tools/latest/maven-plugin-quickstart.html#_build_a_native_executable_by_detecting_resources_with_the_agent
-mvn clean package
+echo "Running ./mvnw clean package"
+./mvnw clean package
 
 #todo: fix this: the native tests execution fails with "Try runing with '--enable-preview' error message
 # mvn -Pnative -Dagent test
-mvn -Pnative -Dagent exec:exec@java-agent
-mvn -DskipTests=true -Pnative -Dagent package
+echo "Running ./mvnw  -Pnative -Dagent exec:exec@java-agent"
+./mvnw -Pnative -Dagent exec:exec@java-agent
+
+echo "Running ./mvnw -DskipTests=true -Pnative -Dagent package"
+./mvnw -DskipTests=true -Pnative -Dagent package
+
+if [[ $# -eq 0 ]] ; then
+    echo 'No image name provided, the binary file will be kept in target folder'
+    exit 1
+fi
+
+echo "Moving $WORK_FOLDER/$IMAGE_NAME"
+mv -f "$WORK_FOLDER/$IMAGE_NAME" "$RELEASES_FOLDER/$1"

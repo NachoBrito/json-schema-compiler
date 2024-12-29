@@ -8,8 +8,11 @@ jobs:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
     steps:
-      - uses: actions/checkout@v4
+      - name: get-name
+        run: |
+          echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
 
+      - uses: actions/checkout@v4
       - uses: graalvm/setup-graalvm@v1
         with:
           java-version: '22'
@@ -17,12 +20,13 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
 
-      - name: Build and run HelloWorld.java
+      - name: Build native image
         run: |
-          ./create-image.sh
+          ./create-image.sh ${{ env.REPO_NAME }}-${{ matrix.os }}
 
-#      - name: Upload binary
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: helloworld-${{ matrix.os }}
-#          path: helloworld*
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          rebase: true
+          message: 'chore: binary image for ${matrix.os} - ${date}'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
