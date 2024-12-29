@@ -24,10 +24,10 @@ jobs:
         run: |
           ./create-image.sh ${{ matrix.os }}
 
-      - name: Commit & Push changes
-        uses: actions-js/push@master
-        with:
-          rebase: true
-          tags: true
-          message: 'chore: binary image for ${{matrix.os}}'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Commit & Push changes
+#        uses: actions-js/push@master
+#        with:
+#          rebase: true
+#          tags: true
+#          message: 'chore: binary image for ${{matrix.os}}'
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
