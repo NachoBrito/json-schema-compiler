@@ -33,4 +33,12 @@ public interface InputParameters {
   default Path getOutputFolder() {
     return Path.of(".");
   }
+
+  default Optional<Path> getJsonSchemaFile() {
+    return Optional.empty();
+  }
+
+  default Optional<String> getJsonSchemaCode() {
+    return Optional.empty();
+  }
 }

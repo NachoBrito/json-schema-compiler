@@ -1,0 +1,9 @@
+{
+  "reflection": [
+    {
+      "type": "es.nachobrito.jsonschema.compiler.application.jcommander.Params",
+      "allDeclaredFields":true,
+      "allDeclaredMethods":true
+    }
+  ]
+}
