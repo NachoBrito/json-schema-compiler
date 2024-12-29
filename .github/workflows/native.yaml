@@ -22,8 +22,8 @@ jobs:
 
       - name: Build native image
         run: |
-          git config --global user.email "${{env.GITHUB_TRIGGERING_ACTOR}}@github.action"
-          git config --global user.name "${{env.GITHUB_TRIGGERING_ACTOR}}"
+          git config --global user.email "pipeline@nachobrito.es"
+          git config --global user.name "Pipeline"
           ./create-image.sh ${{ matrix.os }}
 
 #      - name: Commit & Push changes
