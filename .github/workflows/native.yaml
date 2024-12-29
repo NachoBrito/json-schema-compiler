@@ -28,5 +28,5 @@ jobs:
         uses: actions-js/push@master
         with:
           rebase: true
-          message: 'chore: binary image for ${matrix.os} - ${date}'
+          message: 'chore: binary image for ${{matrix.os}} - ${date}'
           github_token: ${{ secrets.GITHUB_TOKEN }}
