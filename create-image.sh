@@ -17,6 +17,7 @@
 IMAGE_NAME="json-schema-compiler"
 WORK_FOLDER="./target"
 RELEASES_FOLDER="./bin"
+TODAY=$(date +"%Y-%m-%d")
 
 #see: https://graalvm.github.io/native-build-tools/latest/maven-plugin-quickstart.html#_build_a_native_executable_by_detecting_resources_with_the_agent
 echo "Running ./mvnw clean package"
@@ -35,5 +36,11 @@ if [[ $# -eq 0 ]] ; then
     exit 1
 fi
 
-echo "Moving $WORK_FOLDER/$IMAGE_NAME"
-mv -f "$WORK_FOLDER/$IMAGE_NAME" "$RELEASES_FOLDER/$1"
+echo "Moving $WORK_FOLDER/$IMAGE_NAME to $RELEASES_FOLDER/$1/$IMAGE_NAME"
+mkdir -p "$RELEASES_FOLDER/$1"
+mv -f "$WORK_FOLDER/$IMAGE_NAME" "$RELEASES_FOLDER/$1/$IMAGE_NAME"
+
+echo "Creating tag '$1-$TODAY'"
+git tag -a "$1-$TODAY" -m "Native image for $1, generated on $TODAY"
+echo "Moving tag $1-latest"
+git tag -af "$1-latest" -m "Latest version of the native image for $1"

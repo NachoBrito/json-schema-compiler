@@ -22,11 +22,12 @@ jobs:
 
       - name: Build native image
         run: |
-          ./create-image.sh ${{ env.REPO_NAME }}-${{ matrix.os }}
+          ./create-image.sh ${{ matrix.os }}
 
       - name: Commit & Push changes
         uses: actions-js/push@master
         with:
           rebase: true
-          message: 'chore: binary image for ${{matrix.os}} - ${{date}}'
+          tags: true
+          message: 'chore: binary image for ${{matrix.os}}'
           github_token: ${{ secrets.GITHUB_TOKEN }}
