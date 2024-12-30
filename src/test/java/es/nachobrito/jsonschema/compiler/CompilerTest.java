@@ -18,7 +18,7 @@ package es.nachobrito.jsonschema.compiler;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import es.nachobrito.jsonschema.compiler.domain.Compiler;
-import es.nachobrito.jsonschema.compiler.domain.InputParametersRecord;
+import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfigurationRecord;
 import es.nachobrito.jsonschema.compiler.infrastructure.jsonrefparser.JsonSchemaReader;
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class CompilerTest {
     var uri = URI.create(filePath);
     Path destPath = Path.of(CompilerSmokeTest.TARGET_GENERATED_CLASSES);
     var destURL = destPath.toAbsolutePath().toFile().toURI().toURL();
-    var compiler = new Compiler(new InputParametersRecord(destPath, ""), new JsonSchemaReader());
+    var compiler = new Compiler(new RuntimeConfigurationRecord(destPath, ""), new JsonSchemaReader());
     compiler.compile(uri);
     assertTrue(destPath.toFile().exists());
 
@@ -62,7 +62,7 @@ public class CompilerTest {
       throws IOException, ClassNotFoundException {
     Path destPath = Path.of(CompilerSmokeTest.TARGET_GENERATED_CLASSES);
     var destURL = destPath.toAbsolutePath().toFile().toURI().toURL();
-    var compiler = new Compiler(new InputParametersRecord(destPath, ""), new JsonSchemaReader());
+    var compiler = new Compiler(new RuntimeConfigurationRecord(destPath, ""), new JsonSchemaReader());
     compiler.compile(jsonSchema);
     assertTrue(destPath.toFile().exists());
 

@@ -21,7 +21,7 @@ import static java.lang.classfile.ClassFile.ACC_PUBLIC;
 import static java.lang.constant.ClassDesc.of;
 import static java.lang.constant.ConstantDescs.*;
 
-import es.nachobrito.jsonschema.compiler.domain.InputParameters;
+import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
 import es.nachobrito.jsonschema.compiler.domain.Property;
 import java.lang.classfile.ClassBuilder;
 import java.lang.constant.*;
@@ -30,7 +30,7 @@ import java.util.SortedMap;
 import java.util.stream.Collectors;
 
 record ToStringGenerator(
-        InputParameters inputParameters, ClassDesc classDesc,
+        RuntimeConfiguration runtimeConfiguration, ClassDesc classDesc,
         ClassBuilder classBuilder,
         SortedMap<String, es.nachobrito.jsonschema.compiler.domain.Property> properties)
     implements ModelGenerator {

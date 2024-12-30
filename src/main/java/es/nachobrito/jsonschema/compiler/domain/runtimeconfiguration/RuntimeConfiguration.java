@@ -14,12 +14,12 @@
  *    limitations under the License.
  */
 
-package es.nachobrito.jsonschema.compiler.domain;
+package es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration;
 
 import java.nio.file.Path;
 import java.util.Optional;
 
-public interface InputParameters {
+public interface RuntimeConfiguration {
   /**
    * @return the base package name for generated classes
    */

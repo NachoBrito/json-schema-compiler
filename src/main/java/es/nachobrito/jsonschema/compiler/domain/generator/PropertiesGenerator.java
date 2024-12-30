@@ -19,7 +19,7 @@ package es.nachobrito.jsonschema.compiler.domain.generator;
 import static java.lang.classfile.ClassFile.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import es.nachobrito.jsonschema.compiler.domain.InputParameters;
+import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
 import es.nachobrito.jsonschema.compiler.domain.Property;
 import java.lang.classfile.Annotation;
 import java.lang.classfile.AnnotationElement;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.SortedMap;
 
 record PropertiesGenerator(
-    InputParameters inputParameters,
+    RuntimeConfiguration runtimeConfiguration,
     ClassDesc classDesc,
     ClassBuilder classBuilder,
     SortedMap<String, es.nachobrito.jsonschema.compiler.domain.Property> properties)
@@ -66,7 +66,7 @@ record PropertiesGenerator(
         fieldBuilder -> {
           fieldBuilder.withFlags(ACC_PRIVATE | ACC_FINAL);
 
-          if (inputParameters.withJacksonAnnotations()) {
+          if (runtimeConfiguration.withJacksonAnnotations()) {
             fieldBuilder.with(
                 RuntimeInvisibleAnnotationsAttribute.of(
                     List.of(

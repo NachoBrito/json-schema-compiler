@@ -21,7 +21,7 @@ import es.nachobrito.jsonschema.compiler.infrastructure.jsonrefparser.JsonSchema
 
 public class App {
   public static void main(String[] args) {
-    var params = InputParameters.of(args);
+    var params = RuntimeConfiguration.of(args);
 
     var compiler = new Compiler(params, new JsonSchemaReader());
     var jsonSchemaFile = params.getJsonSchemaFile();

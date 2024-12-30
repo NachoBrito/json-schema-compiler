@@ -16,7 +16,7 @@
 
 package es.nachobrito.jsonschema.compiler.domain.generator;
 
-import es.nachobrito.jsonschema.compiler.domain.InputParameters;
+import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
 import es.nachobrito.jsonschema.compiler.domain.Property;
 import java.lang.classfile.ClassBuilder;
 import java.lang.constant.ClassDesc;
@@ -26,13 +26,13 @@ import java.util.SortedMap;
 public interface ModelGenerator {
 
   static Set<ModelGenerator> of(
-          InputParameters inputParameters, ClassDesc classDesc, ClassBuilder classBuilder, SortedMap<String, Property> properties) {
+          RuntimeConfiguration runtimeConfiguration, ClassDesc classDesc, ClassBuilder classBuilder, SortedMap<String, Property> properties) {
     return Set.of(
-        new ConstructorGenerator(inputParameters, classDesc, classBuilder, properties),
-        new PropertiesGenerator(inputParameters, classDesc, classBuilder, properties),
-        new EqualsGenerator(inputParameters, classDesc, classBuilder, properties),
-        new HashCodeGenerator(inputParameters, classDesc, classBuilder, properties),
-        new ToStringGenerator(inputParameters, classDesc, classBuilder, properties));
+        new ConstructorGenerator(runtimeConfiguration, classDesc, classBuilder, properties),
+        new PropertiesGenerator(runtimeConfiguration, classDesc, classBuilder, properties),
+        new EqualsGenerator(runtimeConfiguration, classDesc, classBuilder, properties),
+        new HashCodeGenerator(runtimeConfiguration, classDesc, classBuilder, properties),
+        new ToStringGenerator(runtimeConfiguration, classDesc, classBuilder, properties));
   }
 
   void generatePart();

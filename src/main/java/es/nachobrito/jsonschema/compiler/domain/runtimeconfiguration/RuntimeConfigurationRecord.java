@@ -14,12 +14,12 @@
  *    limitations under the License.
  */
 
-package es.nachobrito.jsonschema.compiler.domain;
+package es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration;
 
 import java.nio.file.Path;
 import java.util.Optional;
 
-public record InputParametersRecord(Path destPath, String packageName) implements InputParameters {
+public record RuntimeConfigurationRecord(Path destPath, String packageName) implements RuntimeConfiguration {
   @Override
   public Optional<String> getPackageName() {
     return (packageName == null || packageName.isEmpty())

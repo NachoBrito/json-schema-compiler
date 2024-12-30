@@ -21,6 +21,7 @@ import static java.lang.classfile.ClassFile.ACC_PUBLIC;
 import static java.lang.constant.ClassDesc.of;
 
 import es.nachobrito.jsonschema.compiler.domain.generator.ModelGenerator;
+import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
 import es.nachobrito.jsonschema.compiler.domain.schemareader.SchemaReader;
 import java.io.IOException;
 import java.lang.classfile.ClassBuilder;
@@ -30,11 +31,11 @@ import java.nio.file.Path;
 import java.util.SortedMap;
 
 public class Compiler {
-  private final InputParameters inputParameters;
+  private final RuntimeConfiguration runtimeConfiguration;
   private final SchemaReader schemaReader;
 
-  public Compiler(InputParameters inputParameters, SchemaReader schemaReader) {
-    this.inputParameters = inputParameters;
+  public Compiler(RuntimeConfiguration runtimeConfiguration, SchemaReader schemaReader) {
+    this.runtimeConfiguration = runtimeConfiguration;
     this.schemaReader = schemaReader;
   }
 
@@ -58,7 +59,7 @@ public class Compiler {
 
   private void compile(Schema schema) {
     var className =
-        inputParameters
+        runtimeConfiguration
             .getPackageName()
             .map(pkg -> "%s.%s".formatted(pkg, schema.className()))
             .orElse(schema.className());
@@ -78,7 +79,7 @@ public class Compiler {
 
   private Path buildDestinationPath(String className) {
     var parts = "%s.class".formatted(className.replace('.', '/'));
-    var path = Path.of(inputParameters.getOutputFolder().toAbsolutePath().toString(), parts);
+    var path = Path.of(runtimeConfiguration.getOutputFolder().toAbsolutePath().toString(), parts);
     path.getParent().toFile().mkdirs();
     return path;
   }
@@ -88,6 +89,6 @@ public class Compiler {
     classBuilder.withFlags(ACC_PUBLIC | ACC_FINAL).withSuperclass(of("java.lang.Record"));
 
     var classDesc = of(className);
-    ModelGenerator.of(inputParameters, classDesc, classBuilder, properties).forEach(ModelGenerator::generatePart);
+    ModelGenerator.of(runtimeConfiguration, classDesc, classBuilder, properties).forEach(ModelGenerator::generatePart);
   }
 }

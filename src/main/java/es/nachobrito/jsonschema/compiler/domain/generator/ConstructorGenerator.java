@@ -22,12 +22,11 @@ import static java.lang.constant.ConstantDescs.CD_void;
 import static java.lang.constant.ConstantDescs.INIT_NAME;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import es.nachobrito.jsonschema.compiler.domain.InputParameters;
+import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
 import es.nachobrito.jsonschema.compiler.domain.Property;
 import java.lang.classfile.Annotation;
 import java.lang.classfile.AnnotationElement;
 import java.lang.classfile.ClassBuilder;
-import java.lang.classfile.attribute.RuntimeVisibleAnnotationsAttribute;
 import java.lang.classfile.attribute.RuntimeVisibleParameterAnnotationsAttribute;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.MethodTypeDesc;
@@ -35,7 +34,7 @@ import java.util.List;
 import java.util.SortedMap;
 
 record ConstructorGenerator(
-    InputParameters inputParameters,
+    RuntimeConfiguration runtimeConfiguration,
     ClassDesc classDesc,
     ClassBuilder classBuilder,
     SortedMap<String, es.nachobrito.jsonschema.compiler.domain.Property> properties)
@@ -67,7 +66,7 @@ record ConstructorGenerator(
                 }
                 codeBuilder.return_();
               });
-          if (inputParameters.withJacksonAnnotations()) {
+          if (runtimeConfiguration.withJacksonAnnotations()) {
             var annotations =
                 properties.values().stream()
                     .map(

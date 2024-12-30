@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
 
 /**
  * Parses allowed input parameters and implements {@link
- * es.nachobrito.jsonschema.compiler.domain.InputParameters}
+ * es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration}
  */
-public class InputParameters implements es.nachobrito.jsonschema.compiler.domain.InputParameters {
+public class RuntimeConfiguration implements es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration {
   private static final String JSON_SCHEMA_FILE = "JSON_SCHEMA_FILE";
   private static final String PACKAGE = "PACKAGE";
   private static final String OUTPUT = "OUTPUT";
@@ -48,7 +48,7 @@ public class InputParameters implements es.nachobrito.jsonschema.compiler.domain
 
   private final Map<String, String> arguments;
 
-  private InputParameters(Map<String, String> arguments) {
+  private RuntimeConfiguration(Map<String, String> arguments) {
     this.arguments = arguments;
   }
 
@@ -85,7 +85,7 @@ public class InputParameters implements es.nachobrito.jsonschema.compiler.domain
     return Optional.ofNullable(arguments.get(JSON_SCHEMA_FILE)).map(Path::of);
   }
 
-  public static InputParameters of(String[] args) {
+  public static RuntimeConfiguration of(String[] args) {
     var arguments = new HashMap<String, String>();
     String k = null;
     for (String argument : args) {
@@ -103,7 +103,7 @@ public class InputParameters implements es.nachobrito.jsonschema.compiler.domain
         arguments.putIfAbsent(JSON_SCHEMA_FILE, argument);
       }
     }
-    return new InputParameters(arguments);
+    return new RuntimeConfiguration(arguments);
   }
 
   private static void saveParameter(
