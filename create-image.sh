@@ -41,14 +41,15 @@ mkdir -p "$RELEASES_FOLDER/$1"
 mv -f "$WORK_FOLDER/$IMAGE_NAME" "$RELEASES_FOLDER/$1/$IMAGE_NAME"
 
 echo "Commit & push changes"
-git commit -am "chore: native image for $1, generated on $TODAY"
-git pull --rebase
+git add .
+git commit -m "chore: native image for $1, generated on $TODAY"
+git pull --rebase origin main
 git push
 
 echo "Creating tag '$1-$TODAY'"
 git tag -a "$1-$TODAY" -m "Native image for $1, generated on $TODAY"
+git push origin "$1-$TODAY" -f
+
 echo "Moving tag $1-current"
 git tag -af "$1-current" -m "Latest version of the native image for $1"
-
-git push origin "$1-$TODAY" -f
 git push origin "$1-current" -f
