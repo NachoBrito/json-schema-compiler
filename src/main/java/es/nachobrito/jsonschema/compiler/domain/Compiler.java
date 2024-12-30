@@ -21,10 +21,10 @@ import static java.lang.classfile.ClassFile.ACC_PUBLIC;
 import static java.lang.constant.ClassDesc.of;
 
 import es.nachobrito.jsonschema.compiler.domain.generator.ModelGenerator;
+import es.nachobrito.jsonschema.compiler.domain.schemareader.SchemaReader;
 import java.io.IOException;
 import java.lang.classfile.ClassBuilder;
 import java.lang.classfile.ClassFile;
-import java.lang.constant.ClassDesc;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.SortedMap;
@@ -84,10 +84,10 @@ public class Compiler {
   }
 
   private void writeRecord(
-      String className, ClassBuilder classBuilder, SortedMap<String, ClassDesc> properties) {
+      String className, ClassBuilder classBuilder, SortedMap<String, Property> properties) {
     classBuilder.withFlags(ACC_PUBLIC | ACC_FINAL).withSuperclass(of("java.lang.Record"));
 
     var classDesc = of(className);
-    ModelGenerator.of(classDesc, classBuilder, properties).forEach(ModelGenerator::generatePart);
+    ModelGenerator.of(inputParameters, classDesc, classBuilder, properties).forEach(ModelGenerator::generatePart);
   }
 }

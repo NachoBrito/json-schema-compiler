@@ -21,6 +21,8 @@ import static java.lang.classfile.ClassFile.ACC_PUBLIC;
 import static java.lang.constant.ClassDesc.of;
 import static java.lang.constant.ConstantDescs.*;
 
+import es.nachobrito.jsonschema.compiler.domain.InputParameters;
+import es.nachobrito.jsonschema.compiler.domain.Property;
 import java.lang.classfile.ClassBuilder;
 import java.lang.constant.*;
 import java.util.List;
@@ -28,7 +30,9 @@ import java.util.SortedMap;
 import java.util.stream.Collectors;
 
 record ToStringGenerator(
-    ClassDesc classDesc, ClassBuilder classBuilder, SortedMap<String, ClassDesc> properties)
+        InputParameters inputParameters, ClassDesc classDesc,
+        ClassBuilder classBuilder,
+        SortedMap<String, es.nachobrito.jsonschema.compiler.domain.Property> properties)
     implements ModelGenerator {
   @Override
   public void generatePart() {
@@ -36,25 +40,25 @@ record ToStringGenerator(
     // https://github.com/openjdk/babylon/blob/490332b12e479d8a0c164cb32dab1def982d8fce/hat/hat/src/main/java/hat/ifacemapper/ByteCodeGenerator.java#L36
     var nonArrayGetters =
         properties.entrySet().stream()
-            .filter(entry -> !entry.getValue().isArray())
+            .filter(entry -> !entry.getValue().type().isArray())
             .map(
                 entry ->
                     MethodHandleDesc.ofField(
                         DirectMethodHandleDesc.Kind.GETTER,
                         classDesc,
-                        entry.getKey(),
-                        entry.getValue()))
+                        entry.getValue().formattedName(),
+                        entry.getValue().type()))
             .toList();
 
     var recipe =
         properties.entrySet().stream()
             .map(
                 entry ->
-                    entry.getValue().isArray()
+                    entry.getValue().type().isArray()
                         ? String.format(
                             "%s=%s%s",
-                            entry.getKey(), entry.getValue().arrayType().displayName(), "[]")
-                        : String.format("%s=\u0001", entry.getKey()))
+                            entry.getValue().formattedName(), entry.getValue().type().arrayType().displayName(), "[]")
+                        : String.format("%s=\u0001", entry.getValue().formattedName()))
             .collect(Collectors.joining(", ", classDesc.displayName() + "[", "]"));
 
     DirectMethodHandleDesc bootstrap =
@@ -66,7 +70,7 @@ record ToStringGenerator(
             CD_Object.arrayType());
 
     List<ClassDesc> getDescriptions =
-        properties.values().stream().filter(it -> !it.isArray()).toList();
+        properties.values().stream().map(Property::type).filter(it -> !it.isArray()).toList();
 
     DynamicCallSiteDesc desc =
         DynamicCallSiteDesc.of(

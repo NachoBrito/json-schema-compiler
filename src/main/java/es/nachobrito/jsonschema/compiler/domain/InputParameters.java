@@ -41,4 +41,8 @@ public interface InputParameters {
   default Optional<String> getJsonSchemaCode() {
     return Optional.empty();
   }
+
+  default boolean withJacksonAnnotations() {
+    return true;
+  }
 }

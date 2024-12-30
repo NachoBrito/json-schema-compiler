@@ -18,29 +18,39 @@ package es.nachobrito.jsonschema.compiler.domain.generator;
 
 import static java.lang.classfile.ClassFile.*;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import es.nachobrito.jsonschema.compiler.domain.InputParameters;
+import es.nachobrito.jsonschema.compiler.domain.Property;
+import java.lang.classfile.Annotation;
+import java.lang.classfile.AnnotationElement;
 import java.lang.classfile.ClassBuilder;
+import java.lang.classfile.attribute.RuntimeInvisibleAnnotationsAttribute;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.MethodTypeDesc;
+import java.util.List;
 import java.util.SortedMap;
 
 record PropertiesGenerator(
-    ClassDesc classDesc, ClassBuilder classBuilder, SortedMap<String, ClassDesc> properties)
+    InputParameters inputParameters,
+    ClassDesc classDesc,
+    ClassBuilder classBuilder,
+    SortedMap<String, es.nachobrito.jsonschema.compiler.domain.Property> properties)
     implements ModelGenerator {
   @Override
   public void generatePart() {
     properties
         .entrySet()
-        .forEach(entry -> buildProperty(classDesc, entry.getKey(), entry.getValue(), classBuilder));
+        .forEach(entry -> buildProperty(classDesc, entry.getValue(), classBuilder));
   }
 
-  private void buildProperty(
-      ClassDesc className, String name, ClassDesc type, ClassBuilder classBuilder) {
-    buildField(name, type, classBuilder);
-    buildAccessor(className, name, type, classBuilder);
+  private void buildProperty(ClassDesc className, Property property, ClassBuilder classBuilder) {
+    buildField(property, classBuilder);
+    buildAccessor(className, property, classBuilder);
   }
 
-  private void buildAccessor(
-      ClassDesc classDesc, String name, ClassDesc type, ClassBuilder classBuilder) {
+  private void buildAccessor(ClassDesc classDesc, Property property, ClassBuilder classBuilder) {
+    var name = property.formattedName();
+    var type = property.type();
     classBuilder.withMethodBody(
         name,
         MethodTypeDesc.of(type),
@@ -48,7 +58,22 @@ record PropertiesGenerator(
         builder -> builder.aload(0).getfield(classDesc, name, type).areturn());
   }
 
-  private void buildField(String name, ClassDesc type, ClassBuilder classBuilder) {
-    classBuilder.withField(name, type, ACC_PRIVATE | ACC_FINAL);
+  private void buildField(Property property, ClassBuilder classBuilder) {
+
+    classBuilder.withField(
+        property.formattedName(),
+        property.type(),
+        fieldBuilder -> {
+          fieldBuilder.withFlags(ACC_PRIVATE | ACC_FINAL);
+
+          if (inputParameters.withJacksonAnnotations()) {
+            fieldBuilder.with(
+                RuntimeInvisibleAnnotationsAttribute.of(
+                    List.of(
+                        Annotation.of(
+                            ClassDesc.of(JsonProperty.class.getName()),
+                            AnnotationElement.ofString("value", property.key())))));
+          }
+        });
   }
 }

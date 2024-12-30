@@ -16,6 +16,8 @@
 
 package es.nachobrito.jsonschema.compiler.domain.generator;
 
+import es.nachobrito.jsonschema.compiler.domain.InputParameters;
+
 import static java.lang.classfile.ClassFile.ACC_FINAL;
 import static java.lang.classfile.ClassFile.ACC_PUBLIC;
 import static java.lang.constant.ConstantDescs.*;
@@ -28,7 +30,7 @@ import java.util.Objects;
 import java.util.SortedMap;
 
 record HashCodeGenerator(
-    ClassDesc classDesc, ClassBuilder classBuilder, SortedMap<String, ClassDesc> properties)
+        InputParameters inputParameters, ClassDesc classDesc, ClassBuilder classBuilder, SortedMap<String, es.nachobrito.jsonschema.compiler.domain.Property> properties)
     implements ModelGenerator {
 
   /**
@@ -58,8 +60,8 @@ record HashCodeGenerator(
               .entrySet()
               .forEach(
                   entry -> {
-                    var propertyName = entry.getKey();
-                    var propertyDesc = entry.getValue();
+                    var propertyName = entry.getValue().formattedName();
+                    var propertyDesc = entry.getValue().type();
                     cob.ldc(59).imul();
                     loadFieldValue(propertyName, propertyDesc, cob);
                     cob.iadd();

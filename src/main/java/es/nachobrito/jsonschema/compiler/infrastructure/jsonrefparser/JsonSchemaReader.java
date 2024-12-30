@@ -16,51 +16,19 @@
 
 package es.nachobrito.jsonschema.compiler.infrastructure.jsonrefparser;
 
-import static java.lang.constant.ConstantDescs.*;
-import static java.util.stream.Collectors.toMap;
 
 import es.nachobrito.jsonschema.compiler.domain.CompilerException;
-import es.nachobrito.jsonschema.compiler.domain.Schema;
-import es.nachobrito.jsonschema.compiler.domain.SchemaReader;
+import es.nachobrito.jsonschema.compiler.domain.schemareader.AbstractSchemaReader;
 import io.zenwave360.jsonrefparser.$RefParser;
 import io.zenwave360.jsonrefparser.$Refs;
 import java.io.IOException;
-import java.lang.constant.ClassDesc;
 import java.net.URI;
-import java.util.Collections;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
-public class JsonSchemaReader implements SchemaReader {
+public class JsonSchemaReader extends AbstractSchemaReader {
 
-  public String getClassName(Map<String, Object> models) {
-    return String.valueOf(models.getOrDefault("title", "UnknownClassName"));
-  }
-
-  public SortedMap<String, ClassDesc> getProperties(Map<String, Object> models) {
-    var definitions =
-        ((Map<String, Map<String, ?>>) models.getOrDefault("properties", Collections.emptyMap()));
-    return definitions.entrySet().stream()
-        .collect(
-            toMap(
-                entry -> entry.getKey(),
-                entry -> getJavaType((String) entry.getValue().get("type")),
-                (v1, v2) -> {
-                  throw new CompilerException("Duplicate property found!");
-                },
-                TreeMap::new));
-  }
-
-  private ClassDesc getJavaType(String jsonSchemaType) {
-    return switch (jsonSchemaType) {
-      case "string" -> CD_String;
-      case "integer" -> CD_Integer;
-      default -> CD_Object;
-    };
-  }
-
-  private static Map<String, Object> loadModels(URI uri) {
+  @Override
+  protected Map<String, Object> loadModels(URI uri) {
     try {
       $RefParser parser = new $RefParser(uri);
       $Refs refs = parser.parse().dereference().mergeAllOf().getRefs();
@@ -70,7 +38,8 @@ public class JsonSchemaReader implements SchemaReader {
     }
   }
 
-  private Map<String, Object> loadModels(String jsonSchema) {
+  @Override
+  protected Map<String, Object> loadModels(String jsonSchema) {
     try {
       $RefParser parser = new $RefParser(jsonSchema);
       $Refs refs = parser.parse().dereference().mergeAllOf().getRefs();
@@ -80,15 +49,4 @@ public class JsonSchemaReader implements SchemaReader {
     }
   }
 
-  @Override
-  public Schema read(URI uri) {
-    var models = loadModels(uri);
-    return new Schema(getClassName(models), getProperties(models));
-  }
-
-  @Override
-  public Schema read(String jsonSchema) {
-    var models = loadModels(jsonSchema);
-    return new Schema(getClassName(models), getProperties(models));
-  }
 }

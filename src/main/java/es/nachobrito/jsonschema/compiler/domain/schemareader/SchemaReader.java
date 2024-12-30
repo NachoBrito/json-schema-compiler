@@ -14,8 +14,15 @@
  *    limitations under the License.
  */
 
-package es.nachobrito.jsonschema.compiler.domain;
+package es.nachobrito.jsonschema.compiler.domain.schemareader;
 
-import java.util.SortedMap;
 
-public record Schema(String className, SortedMap<String, Property> properties) {}
+import es.nachobrito.jsonschema.compiler.domain.Schema;
+import java.net.URI;
+
+public interface SchemaReader {
+
+  Schema read(URI uri);
+
+  Schema read(String jsonSchema);
+}

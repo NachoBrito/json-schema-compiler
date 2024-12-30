@@ -16,12 +16,13 @@
 
 package es.nachobrito.jsonschema.compiler.domain;
 
+import java.lang.constant.ClassDesc;
+import java.util.regex.Pattern;
 
-import java.net.URI;
+public record Property(String key, ClassDesc type) {
+  private static final Pattern jsonIdPattern = Pattern.compile("[_\\-]([a-z])");
 
-public interface SchemaReader {
-
-  Schema read(URI uri);
-
-  Schema read(String jsonSchema);
+  public String formattedName() {
+    return jsonIdPattern.matcher(key).replaceAll(m -> m.group(1).toUpperCase());
+  }
 }
