@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 /** Verifies basic schema compilation, and general cases for toString/hashCode/equals methods. */
 public class CompilerSmokeTest extends CompilerTest{
 
-  public static final String TARGET_GENERATED_CLASSES = "target/generated-classes";
 
   @Test
   void expectSimpleFileCompiled()

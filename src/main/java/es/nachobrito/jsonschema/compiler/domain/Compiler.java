@@ -23,21 +23,22 @@ import static java.lang.constant.ClassDesc.of;
 import es.nachobrito.jsonschema.compiler.domain.generator.ModelGenerator;
 import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
 import es.nachobrito.jsonschema.compiler.domain.schemareader.SchemaReaderFactory;
-import java.io.IOException;
 import java.lang.classfile.ClassBuilder;
 import java.lang.classfile.ClassFile;
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.SortedMap;
 
 public class Compiler {
   private final RuntimeConfiguration runtimeConfiguration;
   private final SchemaReaderFactory schemaReaderFactory;
+  private final GeneratedClassesHandler generatedClassesHandler;
 
-  public Compiler(RuntimeConfiguration runtimeConfiguration, SchemaReaderFactory schemaReaderFactory) {
+  public Compiler(
+      RuntimeConfiguration runtimeConfiguration, SchemaReaderFactory schemaReaderFactory) {
     this.runtimeConfiguration = runtimeConfiguration;
     this.schemaReaderFactory = schemaReaderFactory;
+    this.generatedClassesHandler = runtimeConfiguration.getGeneratedClassesHandler();
   }
 
   /**
@@ -58,9 +59,10 @@ public class Compiler {
     compileAll(schemaReaderFactory.makeSchemaReader().read(jsonSchema));
   }
 
-
   private void compileAll(List<Schema> schemas) {
+    generatedClassesHandler.beforeCompile();
     schemas.forEach(this::compileSchema);
+    generatedClassesHandler.afterCompile();
   }
 
   private void compileSchema(Schema schema) {
@@ -69,25 +71,13 @@ public class Compiler {
             .getPackageName()
             .map(pkg -> "%s.%s".formatted(pkg, schema.className()))
             .orElse(schema.className());
-    var destinationPath = buildDestinationPath(className);
     var properties = schema.properties();
 
-    try {
-      ClassFile.of()
-          .buildTo(
-              destinationPath,
-              of(className),
-              classBuilder -> writeRecord(className, classBuilder, properties));
-    } catch (IOException e) {
-      throw new CompilerException(e);
-    }
-  }
+    var bytes =
+        ClassFile.of()
+            .build(of(className), classBuilder -> writeRecord(className, classBuilder, properties));
 
-  private Path buildDestinationPath(String className) {
-    var parts = "%s.class".formatted(className.replace('.', '/'));
-    var path = Path.of(runtimeConfiguration.getOutputFolder().toAbsolutePath().toString(), parts);
-    path.getParent().toFile().mkdirs();
-    return path;
+    generatedClassesHandler.handleGeneratedClass(className, bytes);
   }
 
   private void writeRecord(

@@ -16,6 +16,9 @@
 
 package es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration;
 
+import es.nachobrito.jsonschema.compiler.domain.GeneratedClassesHandler;
+import es.nachobrito.jsonschema.compiler.infrastructure.IndividualFilesHandler;
+import es.nachobrito.jsonschema.compiler.infrastructure.JarFileHandler;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -30,7 +33,7 @@ public interface RuntimeConfiguration {
   /**
    * @return the output folder for generated class files
    */
-  default Path getOutputFolder() {
+  default Path getOutputPath() {
     return Path.of(".");
   }
 
@@ -44,5 +47,13 @@ public interface RuntimeConfiguration {
 
   default boolean withJacksonAnnotations() {
     return true;
+  }
+
+  default GeneratedClassesHandler getGeneratedClassesHandler(){
+    var path = getOutputPath().toAbsolutePath();
+    if (path.toString().endsWith(".jar")) {
+      return new JarFileHandler(path);
+    }
+    return new IndividualFilesHandler(path);
   }
 }

@@ -59,7 +59,7 @@ public class RuntimeConfiguration
   }
 
   @Override
-  public Path getOutputFolder() {
+  public Path getOutputPath() {
     return Path.of(arguments.getOrDefault(OUTPUT, "."));
   }
 

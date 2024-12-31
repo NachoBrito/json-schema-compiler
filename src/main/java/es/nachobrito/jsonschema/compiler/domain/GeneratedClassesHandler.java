@@ -14,22 +14,18 @@
  *    limitations under the License.
  */
 
-package es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration;
+package es.nachobrito.jsonschema.compiler.domain;
 
-import java.nio.file.Path;
-import java.util.Optional;
+public interface GeneratedClassesHandler {
 
-public record RuntimeConfigurationRecord(Path destPath, String packageName)
-    implements RuntimeConfiguration {
-  @Override
-  public Optional<String> getPackageName() {
-    return (packageName == null || packageName.isEmpty())
-        ? Optional.empty()
-        : Optional.of(packageName);
-  }
 
-  @Override
-  public Path getOutputPath() {
-    return destPath;
-  }
+    default void beforeCompile(){
+        //Implement this method for preparatory tasks before any class is generated.
+    };
+
+    void handleGeneratedClass(String className, byte[] bytes);
+
+    default void afterCompile(){
+        //Implement this method for resource cleanup after all classes have been compiled.
+    }
 }

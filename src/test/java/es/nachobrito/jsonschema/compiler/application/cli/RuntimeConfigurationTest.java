@@ -32,22 +32,22 @@ class RuntimeConfigurationTest {
 
     args = new String[] {"-p", "es.nachobrito.test", "path/to/json.schema"};
     params = RuntimeConfiguration.of(args);
-    assertEquals(Path.of("."), params.getOutputFolder());
+    assertEquals(Path.of("."), params.getOutputPath());
     assertEquals(Optional.of(args[1]), params.getPackageName());
 
     args = new String[] {"-o", "/dest/folder", "path/to/json.schema"};
     params = RuntimeConfiguration.of(args);
-    assertEquals(Path.of(args[1]), params.getOutputFolder());
+    assertEquals(Path.of(args[1]), params.getOutputPath());
     assertEquals(Optional.empty(), params.getPackageName());
 
     args = new String[] {"path/to/json.schema"};
     params = RuntimeConfiguration.of(args);
-    assertEquals(Path.of("."), params.getOutputFolder());
+    assertEquals(Path.of("."), params.getOutputPath());
     assertEquals(Optional.empty(), params.getPackageName());
 
     args = new String[] {};
     params = RuntimeConfiguration.of(args);
-    assertEquals(Path.of("."), params.getOutputFolder());
+    assertEquals(Path.of("."), params.getOutputPath());
     assertEquals(Optional.empty(), params.getPackageName());
   }
 
@@ -58,17 +58,17 @@ class RuntimeConfigurationTest {
 
     args = new String[] {"-o", "/dest/folder", "-p", "es.nachobrito.test", "path/to/json.schema"};
     params = RuntimeConfiguration.of(args);
-    assertEquals(Path.of(args[1]), params.getOutputFolder());
+    assertEquals(Path.of(args[1]), params.getOutputPath());
     assertEquals(Optional.of(args[3]), params.getPackageName());
 
     args = new String[] {"-p", "es.nachobrito.test", "-o", "/dest/folder", "path/to/json.schema"};
     params = RuntimeConfiguration.of(args);
-    assertEquals(Path.of(args[3]), params.getOutputFolder());
+    assertEquals(Path.of(args[3]), params.getOutputPath());
     assertEquals(Optional.of(args[1]), params.getPackageName());
 
     args = new String[] {"path/to/json.schema", "-p", "es.nachobrito.test", "-o", "/dest/folder"};
     params = RuntimeConfiguration.of(args);
-    assertEquals(Path.of(args[4]), params.getOutputFolder());
+    assertEquals(Path.of(args[4]), params.getOutputPath());
     assertEquals(Optional.of(args[2]), params.getPackageName());
   }
 

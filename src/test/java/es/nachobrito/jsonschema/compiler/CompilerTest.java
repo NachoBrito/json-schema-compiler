@@ -37,6 +37,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 public class CompilerTest {
+  public static final String TARGET_GENERATED_CLASSES = "target/generated-classes";
 
   protected static Object instantiateSampleSchema(
       String filePath, String expectedName, Object... initArgs)
@@ -58,7 +59,7 @@ public class CompilerTest {
     var compiler =
         new Compiler(new RuntimeConfigurationRecord(destPath, ""), new JsonSchemaReaderFactory());
     compiler.compile(uri);
-    assertTrue(destPath.toFile().exists());
+    assertTrue(Files.exists(destPath));
 
     return new URLClassLoader(new URL[] {destURL}).loadClass(expectedName);
   }
@@ -70,7 +71,7 @@ public class CompilerTest {
     var compiler =
         new Compiler(new RuntimeConfigurationRecord(destPath, ""), new JsonSchemaReaderFactory());
     compiler.compile(jsonSchema);
-    assertTrue(destPath.toFile().exists());
+    assertTrue(Files.exists(destPath));
 
     return new URLClassLoader(new URL[] {destURL}).loadClass(expectedName);
   }
@@ -91,5 +92,16 @@ public class CompilerTest {
 
   protected ObjectMapper createObjectMapper() {
     return new ObjectMapper().registerModule(new JavaTimeModule());
+  }
+
+
+  protected Path compileSampleSchemaFromFileToJar(String schemaFile, String packageName) {
+    var uri = URI.create(schemaFile);
+    Path destPath = Path.of(CompilerSmokeTest.TARGET_GENERATED_CLASSES + "/generated.jar");
+    var compiler =
+            new Compiler(new RuntimeConfigurationRecord(destPath, packageName), new JsonSchemaReaderFactory());
+    compiler.compile(uri);
+    assertTrue(Files.exists(destPath));
+    return destPath;
   }
 }
