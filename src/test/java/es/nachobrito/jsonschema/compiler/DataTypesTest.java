@@ -194,6 +194,9 @@ public class DataTypesTest extends CompilerTest {
     "anInteger": {
       "type": "integer"
     },
+    "aNumber": {
+      "type": "number"
+    },
     "aBoolean": {
       "type": "boolean"
     }
@@ -205,14 +208,16 @@ public class DataTypesTest extends CompilerTest {
 
     assertEquals(String.class, cls.getDeclaredField("aString").getType());
     assertEquals(Integer.class, cls.getDeclaredField("anInteger").getType());
+    assertEquals(Double.class, cls.getDeclaredField("aNumber").getType());
     assertEquals(Boolean.class, cls.getDeclaredField("aBoolean").getType());
 
     var constructors = cls.getDeclaredConstructors();
-    var instance = constructors[0].newInstance(true, "the string", 1);
+    var instance = constructors[0].newInstance(true, 2.0, "the string", 1);
 
     assertNotNull(instance);
     assertEquals("the string", cls.getMethod("aString").invoke(instance));
     assertEquals(1, cls.getMethod("anInteger").invoke(instance));
+    assertEquals(2.0, cls.getMethod("aNumber").invoke(instance));
     assertEquals(true, cls.getMethod("aBoolean").invoke(instance));
   }
 }

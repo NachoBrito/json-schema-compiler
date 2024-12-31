@@ -76,6 +76,7 @@ public abstract class AbstractSchemaReader implements SchemaReader {
     return switch (jsonSchemaType) {
       case "string" -> getJavaStringType(jsonSchemaFormat);
       case "integer" -> CD_Integer;
+      case "number" -> CD_Double;
       case "boolean" -> CD_Boolean;
       //      case "array" -> ?;
       //      case "object" -> ?;
