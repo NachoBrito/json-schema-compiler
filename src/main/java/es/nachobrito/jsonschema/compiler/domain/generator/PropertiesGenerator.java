@@ -19,8 +19,8 @@ package es.nachobrito.jsonschema.compiler.domain.generator;
 import static java.lang.classfile.ClassFile.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
 import es.nachobrito.jsonschema.compiler.domain.Property;
+import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
 import java.lang.classfile.Annotation;
 import java.lang.classfile.AnnotationElement;
 import java.lang.classfile.ClassBuilder;
@@ -34,7 +34,7 @@ record PropertiesGenerator(
     RuntimeConfiguration runtimeConfiguration,
     ClassDesc classDesc,
     ClassBuilder classBuilder,
-    SortedMap<String, es.nachobrito.jsonschema.compiler.domain.Property> properties)
+    SortedMap<String, Property> properties)
     implements ModelGenerator {
   @Override
   public void generatePart() {

@@ -16,7 +16,6 @@
 
 package es.nachobrito.jsonschema.compiler.infrastructure.jsonrefparser;
 
-
 import es.nachobrito.jsonschema.compiler.domain.CompilerException;
 import es.nachobrito.jsonschema.compiler.domain.schemareader.AbstractSchemaReader;
 import io.zenwave360.jsonrefparser.$RefParser;
@@ -48,5 +47,4 @@ public class JsonSchemaReader extends AbstractSchemaReader {
       throw new CompilerException(e);
     }
   }
-
 }

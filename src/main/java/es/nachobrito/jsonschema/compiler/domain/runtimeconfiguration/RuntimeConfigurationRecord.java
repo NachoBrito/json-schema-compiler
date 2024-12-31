@@ -19,7 +19,8 @@ package es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public record RuntimeConfigurationRecord(Path destPath, String packageName) implements RuntimeConfiguration {
+public record RuntimeConfigurationRecord(Path destPath, String packageName)
+    implements RuntimeConfiguration {
   @Override
   public Optional<String> getPackageName() {
     return (packageName == null || packageName.isEmpty())

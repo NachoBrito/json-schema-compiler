@@ -16,7 +16,6 @@
 
 package es.nachobrito.jsonschema.compiler.domain.schemareader;
 
-
 import es.nachobrito.jsonschema.compiler.domain.Schema;
 import java.net.URI;
 

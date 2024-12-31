@@ -26,7 +26,10 @@ import java.util.SortedMap;
 public interface ModelGenerator {
 
   static Set<ModelGenerator> of(
-          RuntimeConfiguration runtimeConfiguration, ClassDesc classDesc, ClassBuilder classBuilder, SortedMap<String, Property> properties) {
+      RuntimeConfiguration runtimeConfiguration,
+      ClassDesc classDesc,
+      ClassBuilder classBuilder,
+      SortedMap<String, Property> properties) {
     return Set.of(
         new ConstructorGenerator(runtimeConfiguration, classDesc, classBuilder, properties),
         new PropertiesGenerator(runtimeConfiguration, classDesc, classBuilder, properties),

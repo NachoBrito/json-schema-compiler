@@ -89,6 +89,7 @@ public class Compiler {
     classBuilder.withFlags(ACC_PUBLIC | ACC_FINAL).withSuperclass(of("java.lang.Record"));
 
     var classDesc = of(className);
-    ModelGenerator.of(runtimeConfiguration, classDesc, classBuilder, properties).forEach(ModelGenerator::generatePart);
+    ModelGenerator.of(runtimeConfiguration, classDesc, classBuilder, properties)
+        .forEach(ModelGenerator::generatePart);
   }
 }

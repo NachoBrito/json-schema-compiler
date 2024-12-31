@@ -16,12 +16,12 @@
 
 package es.nachobrito.jsonschema.compiler.domain.generator;
 
-import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
-
 import static java.lang.classfile.ClassFile.ACC_FINAL;
 import static java.lang.classfile.ClassFile.ACC_PUBLIC;
 import static java.lang.constant.ConstantDescs.*;
 
+import es.nachobrito.jsonschema.compiler.domain.Property;
+import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
 import java.lang.classfile.ClassBuilder;
 import java.lang.classfile.CodeBuilder;
 import java.lang.constant.*;
@@ -30,7 +30,10 @@ import java.util.Objects;
 import java.util.SortedMap;
 
 record HashCodeGenerator(
-        RuntimeConfiguration runtimeConfiguration, ClassDesc classDesc, ClassBuilder classBuilder, SortedMap<String, es.nachobrito.jsonschema.compiler.domain.Property> properties)
+    RuntimeConfiguration runtimeConfiguration,
+    ClassDesc classDesc,
+    ClassBuilder classBuilder,
+    SortedMap<String, Property> properties)
     implements ModelGenerator {
 
   /**

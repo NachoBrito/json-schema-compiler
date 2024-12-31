@@ -21,8 +21,8 @@ import static java.lang.classfile.ClassFile.ACC_PUBLIC;
 import static java.lang.constant.ClassDesc.of;
 import static java.lang.constant.ConstantDescs.*;
 
-import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
 import es.nachobrito.jsonschema.compiler.domain.Property;
+import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
 import java.lang.classfile.ClassBuilder;
 import java.lang.constant.*;
 import java.util.List;
@@ -30,9 +30,10 @@ import java.util.SortedMap;
 import java.util.stream.Collectors;
 
 record ToStringGenerator(
-        RuntimeConfiguration runtimeConfiguration, ClassDesc classDesc,
-        ClassBuilder classBuilder,
-        SortedMap<String, es.nachobrito.jsonschema.compiler.domain.Property> properties)
+    RuntimeConfiguration runtimeConfiguration,
+    ClassDesc classDesc,
+    ClassBuilder classBuilder,
+    SortedMap<String, Property> properties)
     implements ModelGenerator {
   @Override
   public void generatePart() {
@@ -57,7 +58,9 @@ record ToStringGenerator(
                     entry.getValue().type().isArray()
                         ? String.format(
                             "%s=%s%s",
-                            entry.getValue().formattedName(), entry.getValue().type().arrayType().displayName(), "[]")
+                            entry.getValue().formattedName(),
+                            entry.getValue().type().arrayType().displayName(),
+                            "[]")
                         : String.format("%s=\u0001", entry.getValue().formattedName()))
             .collect(Collectors.joining(", ", classDesc.displayName() + "[", "]"));
 

@@ -22,8 +22,8 @@ import static java.lang.constant.ConstantDescs.CD_void;
 import static java.lang.constant.ConstantDescs.INIT_NAME;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
 import es.nachobrito.jsonschema.compiler.domain.Property;
+import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
 import java.lang.classfile.Annotation;
 import java.lang.classfile.AnnotationElement;
 import java.lang.classfile.ClassBuilder;
@@ -37,7 +37,7 @@ record ConstructorGenerator(
     RuntimeConfiguration runtimeConfiguration,
     ClassDesc classDesc,
     ClassBuilder classBuilder,
-    SortedMap<String, es.nachobrito.jsonschema.compiler.domain.Property> properties)
+    SortedMap<String, Property> properties)
     implements ModelGenerator {
   @Override
   public void generatePart() {

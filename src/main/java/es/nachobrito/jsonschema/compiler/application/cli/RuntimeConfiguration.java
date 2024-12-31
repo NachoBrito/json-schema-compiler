@@ -29,7 +29,8 @@ import java.util.stream.Collectors;
  * Parses allowed input parameters and implements {@link
  * es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration}
  */
-public class RuntimeConfiguration implements es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration {
+public class RuntimeConfiguration
+    implements es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration {
   private static final String JSON_SCHEMA_FILE = "JSON_SCHEMA_FILE";
   private static final String PACKAGE = "PACKAGE";
   private static final String OUTPUT = "OUTPUT";
@@ -64,11 +65,11 @@ public class RuntimeConfiguration implements es.nachobrito.jsonschema.compiler.d
 
   @Override
   public Optional<String> getJsonSchemaCode() {
-      try {
-          return readInput();
-      } catch (IOException e) {
-          throw new RuntimeException(e);
-      }
+    try {
+      return readInput();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private Optional<String> readInput() throws IOException {
