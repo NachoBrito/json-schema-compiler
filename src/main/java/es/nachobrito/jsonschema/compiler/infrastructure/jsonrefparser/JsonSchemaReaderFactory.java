@@ -14,15 +14,14 @@
  *    limitations under the License.
  */
 
-package es.nachobrito.jsonschema.compiler.domain.schemareader;
+package es.nachobrito.jsonschema.compiler.infrastructure.jsonrefparser;
 
-import es.nachobrito.jsonschema.compiler.domain.Schema;
-import java.net.URI;
-import java.util.List;
+import es.nachobrito.jsonschema.compiler.domain.schemareader.SchemaReader;
+import es.nachobrito.jsonschema.compiler.domain.schemareader.SchemaReaderFactory;
 
-public interface SchemaReader {
-
-  List<Schema> read(URI uri);
-
-  List<Schema> read(String jsonSchema);
+public class JsonSchemaReaderFactory implements SchemaReaderFactory {
+    @Override
+    public SchemaReader makeSchemaReader() {
+        return new JsonSchemaReader();
+    }
 }

@@ -17,6 +17,8 @@ package es.nachobrito.jsonschema.compiler;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import es.nachobrito.jsonschema.compiler.domain.Compiler;
 import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfigurationRecord;
 import es.nachobrito.jsonschema.compiler.infrastructure.jsonrefparser.JsonSchemaReader;
@@ -29,6 +31,8 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+
+import es.nachobrito.jsonschema.compiler.infrastructure.jsonrefparser.JsonSchemaReaderFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -51,7 +55,8 @@ public class CompilerTest {
     var uri = URI.create(filePath);
     Path destPath = Path.of(CompilerSmokeTest.TARGET_GENERATED_CLASSES);
     var destURL = destPath.toAbsolutePath().toFile().toURI().toURL();
-    var compiler = new Compiler(new RuntimeConfigurationRecord(destPath, ""), new JsonSchemaReader());
+    var compiler =
+        new Compiler(new RuntimeConfigurationRecord(destPath, ""), new JsonSchemaReaderFactory());
     compiler.compile(uri);
     assertTrue(destPath.toFile().exists());
 
@@ -62,7 +67,8 @@ public class CompilerTest {
       throws IOException, ClassNotFoundException {
     Path destPath = Path.of(CompilerSmokeTest.TARGET_GENERATED_CLASSES);
     var destURL = destPath.toAbsolutePath().toFile().toURI().toURL();
-    var compiler = new Compiler(new RuntimeConfigurationRecord(destPath, ""), new JsonSchemaReader());
+    var compiler =
+        new Compiler(new RuntimeConfigurationRecord(destPath, ""), new JsonSchemaReaderFactory());
     compiler.compile(jsonSchema);
     assertTrue(destPath.toFile().exists());
 
@@ -81,5 +87,9 @@ public class CompilerTest {
         .sorted(Comparator.reverseOrder())
         .map(Path::toFile)
         .forEach(File::delete);
+  }
+
+  protected ObjectMapper createObjectMapper() {
+    return new ObjectMapper().registerModule(new JavaTimeModule());
   }
 }

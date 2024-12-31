@@ -16,13 +16,6 @@
 
 package es.nachobrito.jsonschema.compiler.domain.schemareader;
 
-import es.nachobrito.jsonschema.compiler.domain.Schema;
-import java.net.URI;
-import java.util.List;
-
-public interface SchemaReader {
-
-  List<Schema> read(URI uri);
-
-  List<Schema> read(String jsonSchema);
+public interface SchemaReaderFactory {
+    SchemaReader makeSchemaReader();
 }

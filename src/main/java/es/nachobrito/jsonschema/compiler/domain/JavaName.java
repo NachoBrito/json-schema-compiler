@@ -14,15 +14,15 @@
  *    limitations under the License.
  */
 
-package es.nachobrito.jsonschema.compiler.domain.schemareader;
+package es.nachobrito.jsonschema.compiler.domain;
 
-import es.nachobrito.jsonschema.compiler.domain.Schema;
-import java.net.URI;
-import java.util.List;
+import java.util.regex.Pattern;
 
-public interface SchemaReader {
+public class JavaName {
+  private static final Pattern jsonIdPattern = Pattern.compile("[\\W_]([a-z])");
 
-  List<Schema> read(URI uri);
-
-  List<Schema> read(String jsonSchema);
+  public static String fromJsonIdentifier(String identifier) {
+    var formatted = jsonIdPattern.matcher(identifier).replaceAll(m -> m.group(1).toUpperCase());
+    return formatted;
+  }
 }

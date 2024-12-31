@@ -22,21 +22,22 @@ import static java.lang.constant.ClassDesc.of;
 
 import es.nachobrito.jsonschema.compiler.domain.generator.ModelGenerator;
 import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
-import es.nachobrito.jsonschema.compiler.domain.schemareader.SchemaReader;
+import es.nachobrito.jsonschema.compiler.domain.schemareader.SchemaReaderFactory;
 import java.io.IOException;
 import java.lang.classfile.ClassBuilder;
 import java.lang.classfile.ClassFile;
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.SortedMap;
 
 public class Compiler {
   private final RuntimeConfiguration runtimeConfiguration;
-  private final SchemaReader schemaReader;
+  private final SchemaReaderFactory schemaReaderFactory;
 
-  public Compiler(RuntimeConfiguration runtimeConfiguration, SchemaReader schemaReader) {
+  public Compiler(RuntimeConfiguration runtimeConfiguration, SchemaReaderFactory schemaReaderFactory) {
     this.runtimeConfiguration = runtimeConfiguration;
-    this.schemaReader = schemaReader;
+    this.schemaReaderFactory = schemaReaderFactory;
   }
 
   /**
@@ -45,7 +46,7 @@ public class Compiler {
    * @param schemaURI the uri of the file to compile
    */
   public void compile(URI schemaURI) {
-    compile(schemaReader.read(schemaURI));
+    compileAll(schemaReaderFactory.makeSchemaReader().read(schemaURI));
   }
 
   /**
@@ -54,10 +55,15 @@ public class Compiler {
    * @param jsonSchema the schema definition
    */
   public void compile(String jsonSchema) {
-    compile(schemaReader.read(jsonSchema));
+    compileAll(schemaReaderFactory.makeSchemaReader().read(jsonSchema));
   }
 
-  private void compile(Schema schema) {
+
+  private void compileAll(List<Schema> schemas) {
+    schemas.forEach(this::compileSchema);
+  }
+
+  private void compileSchema(Schema schema) {
     var className =
         runtimeConfiguration
             .getPackageName()

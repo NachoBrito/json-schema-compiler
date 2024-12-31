@@ -19,10 +19,10 @@ package es.nachobrito.jsonschema.compiler.domain;
 import java.lang.constant.ClassDesc;
 import java.util.regex.Pattern;
 
-public record Property(String key, ClassDesc type) {
-  private static final Pattern jsonIdPattern = Pattern.compile("[_\\-]([a-z])");
+public record Property(String key, ClassDesc type, String formattedName) {
 
-  public String formattedName() {
-    return jsonIdPattern.matcher(key).replaceAll(m -> m.group(1).toUpperCase());
+  public Property(String key, ClassDesc type){
+    this(key, type, JavaName.fromJsonIdentifier(key));
   }
+
 }

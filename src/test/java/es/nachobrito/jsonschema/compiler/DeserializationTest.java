@@ -20,8 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
@@ -71,7 +70,7 @@ public class DeserializationTest extends CompilerTest {
         }
 """
             .formatted(theUUID.toString());
-    var mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    var mapper = createObjectMapper();
 
     //First, verify deserialization works for the equivalent manually generated record:
     record User2(
@@ -90,4 +89,5 @@ public class DeserializationTest extends CompilerTest {
     assertEquals(LocalDate.parse("1970-04-01"), cls.getDeclaredMethod("dateOfBirth").invoke(user));
     assertEquals(theUUID, cls.getDeclaredMethod("uuid").invoke(user));
   }
+
 }

@@ -21,6 +21,7 @@ import static java.lang.constant.ConstantDescs.*;
 import static java.util.stream.Collectors.toMap;
 
 import es.nachobrito.jsonschema.compiler.domain.CompilerException;
+import es.nachobrito.jsonschema.compiler.domain.JavaName;
 import es.nachobrito.jsonschema.compiler.domain.Property;
 import es.nachobrito.jsonschema.compiler.domain.Schema;
 import java.io.IOException;
@@ -34,54 +35,99 @@ import java.time.*;
 import java.util.*;
 
 public abstract class AbstractSchemaReader implements SchemaReader {
+  private Map<String, Object> models;
+  private Map<String, Schema> schemas = new HashMap<>();
+
   @Override
-  public Schema read(URI uri) {
-    var models = loadModels(uri);
-    return new Schema(getClassName(models), getProperties(models));
+  public List<Schema> read(URI uri) {
+    this.models = loadModels(uri);
+    return createSchemas();
   }
 
   @Override
-  public Schema read(String jsonSchema) {
-    var models = loadModels(jsonSchema);
-    return new Schema(getClassName(models), getProperties(models));
+  public List<Schema> read(String jsonSchema) {
+    this.models = loadModels(jsonSchema);
+    return createSchemas();
   }
 
-  public String getClassName(Map<String, Object> models) {
+  private List<Schema> createSchemas() {
+    schemas.clear();
+    registerSchema(new Schema(getRootClassName(), processProperties(getRootProperties())));
+    return schemas.values().stream().toList();
+  }
+
+  private void registerSchema(Schema schema) {
+    schemas.put(schema.className(), schema);
+  }
+
+  private String getRootClassName() {
     return String.valueOf(models.getOrDefault("title", "UnknownClassName"));
   }
 
-  public SortedMap<String, Property> getProperties(Map<String, Object> models) {
-    var definitions =
-        ((Map<String, Map<String, ?>>) models.getOrDefault("properties", Collections.emptyMap()));
+  private SortedMap<String, Property> processProperties(Map<String, Map<String, ?>> definitions) {
     return definitions.entrySet().stream()
         .collect(
             toMap(
                 Map.Entry::getKey,
-                entry ->
-                    createProperty(
-                        entry.getKey(),
-                        (String) entry.getValue().get("type"),
-                        (String) entry.getValue().get("format")),
+                entry -> createProperty(entry.getKey(), definitions),
                 (v1, v2) -> {
                   throw new CompilerException("Duplicate property found!");
                 },
                 TreeMap::new));
   }
 
-  protected Property createProperty(String key, String type, String format) {
-    return new Property(key, getJavaType(type, format));
+  private Property createProperty(String key, Map<String, Map<String, ?>> propertyDefinitions) {
+    return new Property(key, getJavaType(key, propertyDefinitions));
   }
 
-  protected ClassDesc getJavaType(String jsonSchemaType, String jsonSchemaFormat) {
+  private ClassDesc getJavaType(
+      String propertyKey, Map<String, Map<String, ?>> propertyDefinitions) {
+    var property = getModelPropertyDefinition(propertyKey, propertyDefinitions);
+    var jsonSchemaType = (String) property.get("type");
+    var jsonSchemaFormat = (String) property.get("format");
     return switch (jsonSchemaType) {
       case "string" -> getJavaStringType(jsonSchemaFormat);
       case "integer" -> CD_Integer;
       case "number" -> CD_Double;
       case "boolean" -> CD_Boolean;
       //      case "array" -> ?;
-      //      case "object" -> ?;
+      case "object" -> getJavaObjectType(propertyKey);
       default -> CD_Object;
     };
+  }
+
+  private ClassDesc getJavaObjectType(String propertyKey) {
+    var definition = getModelPropertyDefinition(propertyKey, getRootProperties());
+    var properties = definition.get("properties");
+    var name = getPropertyName(propertyKey, definition);
+    var schema =
+        schemas.computeIfAbsent(
+            name,
+            it -> new Schema(it, processProperties((Map<String, Map<String, ?>>) properties)));
+    return ClassDesc.of(schema.className());
+  }
+
+  private String getPropertyName(String propertyKey, Map<String, ?> definition) {
+    if (definition.containsKey("title")) {
+      return (String) definition.get("title");
+    }
+
+    return JavaName.fromJsonIdentifier("%s_%s".formatted(getRootClassName(), propertyKey));
+  }
+
+  private Map<String, ?> getModelPropertyDefinition(
+      String propertyKey, Map<String, Map<String, ?>> properties) {
+    var definition = properties.get(propertyKey);
+    if (definition == null) {
+      throw new CompilerException("Cannot load property %s".formatted(propertyKey));
+    }
+    return definition;
+  }
+
+  private Map<String, Map<String, ?>> getRootProperties() {
+    //noinspection unchecked
+    return ((Map<String, Map<String, ?>>)
+        models.getOrDefault("properties", Collections.emptyMap()));
   }
 
   private ClassDesc getJavaStringType(String jsonSchemaFormat) {

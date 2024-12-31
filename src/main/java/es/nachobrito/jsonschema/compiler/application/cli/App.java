@@ -18,12 +18,13 @@ package es.nachobrito.jsonschema.compiler.application.cli;
 
 import es.nachobrito.jsonschema.compiler.domain.Compiler;
 import es.nachobrito.jsonschema.compiler.infrastructure.jsonrefparser.JsonSchemaReader;
+import es.nachobrito.jsonschema.compiler.infrastructure.jsonrefparser.JsonSchemaReaderFactory;
 
 public class App {
   public static void main(String[] args) {
     var params = RuntimeConfiguration.of(args);
 
-    var compiler = new Compiler(params, new JsonSchemaReader());
+    var compiler = new Compiler(params, new JsonSchemaReaderFactory());
     var jsonSchemaFile = params.getJsonSchemaFile();
     var jsonSchemaCode = params.getJsonSchemaCode();
     if (jsonSchemaFile.isPresent()) {
