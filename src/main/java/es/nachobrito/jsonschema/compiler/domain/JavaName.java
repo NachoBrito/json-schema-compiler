@@ -16,13 +16,20 @@
 
 package es.nachobrito.jsonschema.compiler.domain;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class JavaName {
   private static final Pattern jsonIdPattern = Pattern.compile("[\\W_]([a-z])");
 
-  public static String fromJsonIdentifier(String identifier) {
-    var formatted = jsonIdPattern.matcher(identifier).replaceAll(m -> m.group(1).toUpperCase());
-    return formatted;
+  public static String variableFromJsonIdentifier(String identifier) {
+    Objects.requireNonNull(identifier);
+    return jsonIdPattern.matcher(identifier).replaceAll(m -> m.group(1).toUpperCase());
+  }
+
+  public static String classFromJsonIdentifier(String identifier) {
+    Objects.requireNonNull(identifier);
+    var variableName = variableFromJsonIdentifier(identifier);
+    return variableName.substring(0, 1).toUpperCase() + variableName.substring(1);
   }
 }

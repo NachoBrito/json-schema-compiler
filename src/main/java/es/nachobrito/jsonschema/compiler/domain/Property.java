@@ -17,12 +17,11 @@
 package es.nachobrito.jsonschema.compiler.domain;
 
 import java.lang.constant.ClassDesc;
-import java.util.regex.Pattern;
 
 public record Property(String key, ClassDesc type, String formattedName) {
 
   public Property(String key, ClassDesc type){
-    this(key, type, JavaName.fromJsonIdentifier(key));
+    this(key, type, JavaName.variableFromJsonIdentifier(key));
   }
 
 }

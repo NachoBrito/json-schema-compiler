@@ -95,12 +95,12 @@ record HashCodeGenerator(
   }
 
   private void loadArrayValue(String propertyName, ClassDesc propertyDesc, CodeBuilder cob) {
-
     cob.aload(0)
         .getfield(classDesc, propertyName, propertyDesc)
         .invokestatic(
             ClassDesc.of(Arrays.class.getName()),
             "deepHashcode",
-            MethodTypeDesc.of(CD_Object.arrayType()));
+            MethodTypeDesc.of(CD_int, CD_Object.arrayType()))
+        ;
   }
 }

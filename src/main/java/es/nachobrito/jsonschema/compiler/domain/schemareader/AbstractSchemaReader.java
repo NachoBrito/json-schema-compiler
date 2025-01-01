@@ -16,7 +16,6 @@
 
 package es.nachobrito.jsonschema.compiler.domain.schemareader;
 
-import static java.lang.constant.ClassDesc.of;
 import static java.lang.constant.ConstantDescs.*;
 import static java.util.stream.Collectors.toMap;
 
@@ -26,17 +25,14 @@ import es.nachobrito.jsonschema.compiler.domain.Property;
 import es.nachobrito.jsonschema.compiler.domain.Schema;
 import java.io.IOException;
 import java.lang.constant.ClassDesc;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.*;
 import java.util.*;
 
 public abstract class AbstractSchemaReader implements SchemaReader {
   private Map<String, Object> models;
-  private Map<String, Schema> schemas = new HashMap<>();
+  private final Map<String, Schema> schemas = new HashMap<>();
 
   @Override
   public List<Schema> read(URI uri) {
@@ -86,12 +82,42 @@ public abstract class AbstractSchemaReader implements SchemaReader {
     var jsonSchemaType = (String) property.get("type");
     var jsonSchemaFormat = (String) property.get("format");
     return switch (jsonSchemaType) {
-      case "string" -> getJavaStringType(jsonSchemaFormat);
       case "integer" -> CD_Integer;
       case "number" -> CD_Double;
       case "boolean" -> CD_Boolean;
-      //      case "array" -> ?;
+      case "array" -> getArrayType(propertyKey);
       case "object" -> getJavaObjectType(propertyKey);
+      case "string" -> StringFormat.toClassDesc(jsonSchemaFormat);
+      default -> CD_Object;
+    };
+  }
+
+  private ClassDesc getArrayType(String propertyKey) {
+    var definition = getModelPropertyDefinition(propertyKey, getRootProperties());
+    @SuppressWarnings("unchecked")
+    var items = (Map<String, ?>) definition.get("items");
+
+    // todo: there is no support for Tuples in Java, so arrays with prefixItems will be treated as
+    // Object[] for now, until a better solution is found.
+    // see: https://json-schema.org/understanding-json-schema/reference/array#tupleValidation
+    if (items == null) {
+      return CD_Object.arrayType();
+    }
+
+    var itemsTypeDefinition = (String) items.get("type");
+    var itemsTypeFormat = (String) items.get("format");
+    var properties = (Map<String, Map<String, ?>>) items.get("properties");
+
+    return switch (itemsTypeDefinition) {
+      case "integer" -> CD_Integer.arrayType();
+      case "number" -> CD_Double.arrayType();
+      case "boolean" -> CD_Boolean.arrayType();
+      // case "array" -> getArrayType(propertyKey);
+      case "object" ->
+          getJavaObjectType(
+                  JavaName.classFromJsonIdentifier("%s_item".formatted(propertyKey)), properties)
+              .arrayType();
+      case "string" -> StringFormat.toClassDesc(itemsTypeFormat).arrayType();
       default -> CD_Object;
     };
   }
@@ -100,10 +126,11 @@ public abstract class AbstractSchemaReader implements SchemaReader {
     var definition = getModelPropertyDefinition(propertyKey, getRootProperties());
     var properties = definition.get("properties");
     var name = getPropertyName(propertyKey, definition);
-    var schema =
-        schemas.computeIfAbsent(
-            name,
-            it -> new Schema(it, processProperties((Map<String, Map<String, ?>>) properties)));
+    return getJavaObjectType(name, (Map<String, Map<String, ?>>) properties);
+  }
+
+  private ClassDesc getJavaObjectType(String name, Map<String, Map<String, ?>> properties) {
+    var schema = schemas.computeIfAbsent(name, it -> new Schema(it, processProperties(properties)));
     return ClassDesc.of(schema.className());
   }
 
@@ -112,7 +139,7 @@ public abstract class AbstractSchemaReader implements SchemaReader {
       return (String) definition.get("title");
     }
 
-    return JavaName.fromJsonIdentifier("%s_%s".formatted(getRootClassName(), propertyKey));
+    return JavaName.variableFromJsonIdentifier("%s_%s".formatted(getRootClassName(), propertyKey));
   }
 
   private Map<String, ?> getModelPropertyDefinition(
@@ -128,26 +155,6 @@ public abstract class AbstractSchemaReader implements SchemaReader {
     //noinspection unchecked
     return ((Map<String, Map<String, ?>>)
         models.getOrDefault("properties", Collections.emptyMap()));
-  }
-
-  private ClassDesc getJavaStringType(String jsonSchemaFormat) {
-    if (jsonSchemaFormat == null) {
-      return CD_String;
-    }
-    return switch (jsonSchemaFormat) {
-      case "date-time" -> of(OffsetDateTime.class.getName());
-      case "time" -> of(OffsetTime.class.getName());
-      case "date" -> of(LocalDate.class.getName());
-      case "duration" -> of(Duration.class.getName());
-
-      case "ipv4" -> of(Inet4Address.class.getName());
-      case "ipv6" -> of(Inet6Address.class.getName());
-
-      case "uuid" -> of(UUID.class.getName());
-      case "uri", "uri-reference", "iri", "iri-reference" -> of(URI.class.getName());
-      // "email", "idn-email", "hostname", "idn-hostname"
-      default -> CD_String;
-    };
   }
 
   protected abstract Map<String, Object> loadModels(String jsonSchema);
