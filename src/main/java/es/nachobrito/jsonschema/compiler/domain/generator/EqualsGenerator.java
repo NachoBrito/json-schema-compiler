@@ -32,14 +32,11 @@ import java.util.Objects;
 import java.util.SortedMap;
 
 record EqualsGenerator(
-    RuntimeConfiguration runtimeConfiguration,
-    ClassDesc classDesc,
-    ClassBuilder classBuilder,
-    SortedMap<String, Property> properties)
+    RuntimeConfiguration runtimeConfiguration,ClassGenerationParams params)
     implements ModelGenerator {
   @Override
   public void generatePart() {
-    classBuilder.withMethodBody(
+    params.classBuilder().withMethodBody(
         "equals",
         MethodTypeDesc.of(CD_boolean, CD_Object),
         ACC_PUBLIC | ACC_FINAL,
@@ -53,14 +50,14 @@ record EqualsGenerator(
               .if_null(returnFalse)
               // if (!(o instanceof *ThisClass*)) return false;
               .aload(1)
-              .instanceof_(classDesc)
+              .instanceof_(params.classDesc())
               .ifeq(returnFalse)
               // if (o == this) return true;
               .aload(0)
               .aload(1)
               .if_acmpeq(returnTrue);
 
-          properties
+          params.properties()
               .entrySet()
               .forEach(
                   entry -> {
@@ -98,10 +95,10 @@ record EqualsGenerator(
       return;
     }
     cob.aload(0)
-        .getfield(classDesc, propertyName, propertyDesc)
+        .getfield(params.classDesc(), propertyName, propertyDesc)
         .aload(1)
-        .checkcast(classDesc)
-        .getfield(classDesc, propertyName, propertyDesc)
+        .checkcast(params.classDesc())
+        .getfield(params.classDesc(), propertyName, propertyDesc)
         .invokestatic(
             ClassDesc.of(Objects.class.getName()),
             "equals",
@@ -112,10 +109,10 @@ record EqualsGenerator(
   private void compareArray(
       String propertyName, ClassDesc propertyDesc, CodeBuilder cob, Label returnFalse) {
     cob.aload(0)
-        .getfield(classDesc, propertyName, propertyDesc)
+        .getfield(params.classDesc(), propertyName, propertyDesc)
         .aload(1)
-        .checkcast(classDesc)
-        .getfield(classDesc, propertyName, propertyDesc)
+        .checkcast(params.classDesc())
+        .getfield(params.classDesc(), propertyName, propertyDesc)
         .invokestatic(
             ClassDesc.of(Objects.class.getName()),
             "deepEquals",
@@ -126,10 +123,10 @@ record EqualsGenerator(
   private void comparePrimitive(
       String propertyName, ClassDesc propertyDesc, CodeBuilder cob, Label returnFalse) {
     cob.aload(0)
-        .getfield(classDesc, propertyName, propertyDesc)
+        .getfield(params.classDesc(), propertyName, propertyDesc)
         .aload(1)
-        .checkcast(classDesc)
-        .getfield(classDesc, propertyName, propertyDesc)
+        .checkcast(params.classDesc())
+        .getfield(params.classDesc(), propertyName, propertyDesc)
         .if_icmpne(returnFalse);
   }
 }

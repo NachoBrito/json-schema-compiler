@@ -20,6 +20,7 @@ import static java.lang.classfile.ClassFile.ACC_FINAL;
 import static java.lang.classfile.ClassFile.ACC_PUBLIC;
 import static java.lang.constant.ClassDesc.of;
 
+import es.nachobrito.jsonschema.compiler.domain.generator.ClassGenerationParams;
 import es.nachobrito.jsonschema.compiler.domain.generator.ModelGenerator;
 import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
 import es.nachobrito.jsonschema.compiler.domain.schemareader.SchemaReaderFactory;
@@ -85,7 +86,7 @@ public class Compiler {
     classBuilder.withFlags(ACC_PUBLIC | ACC_FINAL).withSuperclass(of("java.lang.Record"));
 
     var classDesc = of(className);
-    ModelGenerator.of(runtimeConfiguration, classDesc, classBuilder, properties)
-        .forEach(ModelGenerator::generatePart);
+    var params = new ClassGenerationParams(classDesc, classBuilder, properties);
+    ModelGenerator.of(runtimeConfiguration, params).forEach(ModelGenerator::generatePart);
   }
 }

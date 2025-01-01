@@ -16,25 +16,10 @@
 
 package es.nachobrito.jsonschema.compiler.domain.generator;
 
-import es.nachobrito.jsonschema.compiler.domain.runtimeconfiguration.RuntimeConfiguration;
 import es.nachobrito.jsonschema.compiler.domain.Property;
 import java.lang.classfile.ClassBuilder;
 import java.lang.constant.ClassDesc;
-import java.util.Set;
 import java.util.SortedMap;
 
-public interface ModelGenerator {
-
-  static Set<ModelGenerator> of(
-      RuntimeConfiguration runtimeConfiguration,
-      ClassGenerationParams params) {
-    return Set.of(
-        new ConstructorGenerator(runtimeConfiguration, params),
-        new PropertiesGenerator(runtimeConfiguration, params),
-        new EqualsGenerator(runtimeConfiguration, params),
-        new HashCodeGenerator(runtimeConfiguration, params),
-        new ToStringGenerator(runtimeConfiguration, params));
-  }
-
-  void generatePart();
-}
+public record ClassGenerationParams(
+    ClassDesc classDesc, ClassBuilder classBuilder, SortedMap<String, Property> properties) {}

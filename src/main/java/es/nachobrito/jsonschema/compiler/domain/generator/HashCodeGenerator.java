@@ -31,9 +31,7 @@ import java.util.SortedMap;
 
 record HashCodeGenerator(
     RuntimeConfiguration runtimeConfiguration,
-    ClassDesc classDesc,
-    ClassBuilder classBuilder,
-    SortedMap<String, Property> properties)
+    ClassGenerationParams params)
     implements ModelGenerator {
 
   /**
@@ -53,13 +51,13 @@ record HashCodeGenerator(
    */
   @Override
   public void generatePart() {
-    classBuilder.withMethodBody(
+    params.classBuilder().withMethodBody(
         "hashCode",
         MethodTypeDesc.of(CD_int),
         ACC_PUBLIC | ACC_FINAL,
         cob -> {
           cob.ldc(1);
-          properties
+          params.properties()
               .entrySet()
               .forEach(
                   entry -> {
@@ -83,7 +81,7 @@ record HashCodeGenerator(
       return;
     }
     cob.aload(0)
-        .getfield(classDesc, propertyName, propertyDesc)
+        .getfield(params.classDesc(), propertyName, propertyDesc)
         .invokestatic(
             ClassDesc.of(Objects.class.getName()),
             "hashCode",
@@ -91,12 +89,12 @@ record HashCodeGenerator(
   }
 
   private void loadPrimitiveValue(String propertyName, ClassDesc propertyDesc, CodeBuilder cob) {
-    cob.aload(0).getfield(classDesc, propertyName, propertyDesc);
+    cob.aload(0).getfield(params.classDesc(), propertyName, propertyDesc);
   }
 
   private void loadArrayValue(String propertyName, ClassDesc propertyDesc, CodeBuilder cob) {
     cob.aload(0)
-        .getfield(classDesc, propertyName, propertyDesc)
+        .getfield(params.classDesc(), propertyName, propertyDesc)
         .invokestatic(
             ClassDesc.of(Arrays.class.getName()),
             "deepHashcode",

@@ -35,16 +35,15 @@ import java.util.SortedMap;
 
 record ConstructorGenerator(
     RuntimeConfiguration runtimeConfiguration,
-    ClassDesc classDesc,
-    ClassBuilder classBuilder,
-    SortedMap<String, Property> properties)
+    ClassGenerationParams params
+)
     implements ModelGenerator {
   @Override
   public void generatePart() {
     var propertyTypes =
-        properties.values().stream().map(Property::type).toArray(ClassDesc[]::new);
+        params.properties().values().stream().map(Property::type).toArray(ClassDesc[]::new);
 
-    classBuilder.withMethod(
+    params.classBuilder().withMethod(
         INIT_NAME,
         MethodTypeDesc.of(CD_void, propertyTypes),
         ACC_PUBLIC,
@@ -55,20 +54,20 @@ record ConstructorGenerator(
                 codeBuilder
                     .aload(0)
                     .invokespecial(of("java.lang.Record"), INIT_NAME, MethodTypeDesc.of(CD_void));
-                // Set properties:
+                // Set params.properties():
                 int index = 1;
-                for (var entry : properties.entrySet()) {
+                for (var entry : params.properties().entrySet()) {
                   codeBuilder
                       .aload(0)
                       .aload(index++)
                       .putfield(
-                          classDesc, entry.getValue().formattedName(), entry.getValue().type());
+                          params.classDesc(), entry.getValue().formattedName(), entry.getValue().type());
                 }
                 codeBuilder.return_();
               });
           if (runtimeConfiguration.withJacksonAnnotations()) {
             var annotations =
-                properties.values().stream()
+                params.properties().values().stream()
                     .map(
                         property ->
                             List.of(

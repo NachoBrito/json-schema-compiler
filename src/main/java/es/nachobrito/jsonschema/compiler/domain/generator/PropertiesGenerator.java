@@ -32,35 +32,33 @@ import java.util.SortedMap;
 
 record PropertiesGenerator(
     RuntimeConfiguration runtimeConfiguration,
-    ClassDesc classDesc,
-    ClassBuilder classBuilder,
-    SortedMap<String, Property> properties)
+    ClassGenerationParams params)
     implements ModelGenerator {
   @Override
   public void generatePart() {
-    properties
+    params.properties()
         .entrySet()
-        .forEach(entry -> buildProperty(classDesc, entry.getValue(), classBuilder));
+        .forEach(entry -> buildProperty(entry.getValue()));
   }
 
-  private void buildProperty(ClassDesc className, Property property, ClassBuilder classBuilder) {
-    buildField(property, classBuilder);
-    buildAccessor(className, property, classBuilder);
+  private void buildProperty(Property property) {
+    buildField(property);
+    buildAccessor(property);
   }
 
-  private void buildAccessor(ClassDesc classDesc, Property property, ClassBuilder classBuilder) {
+  private void buildAccessor(Property property) {
     var name = property.formattedName();
     var type = property.type();
-    classBuilder.withMethodBody(
+    params.classBuilder().withMethodBody(
         name,
         MethodTypeDesc.of(type),
         ACC_PUBLIC,
-        builder -> builder.aload(0).getfield(classDesc, name, type).areturn());
+        builder -> builder.aload(0).getfield(params.classDesc(), name, type).areturn());
   }
 
-  private void buildField(Property property, ClassBuilder classBuilder) {
+  private void buildField(Property property) {
 
-    classBuilder.withField(
+    params.classBuilder().withField(
         property.formattedName(),
         property.type(),
         fieldBuilder -> {

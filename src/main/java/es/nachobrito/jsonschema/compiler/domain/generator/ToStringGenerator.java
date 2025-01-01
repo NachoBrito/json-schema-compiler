@@ -31,28 +31,26 @@ import java.util.stream.Collectors;
 
 record ToStringGenerator(
     RuntimeConfiguration runtimeConfiguration,
-    ClassDesc classDesc,
-    ClassBuilder classBuilder,
-    SortedMap<String, Property> properties)
+    ClassGenerationParams params)
     implements ModelGenerator {
   @Override
   public void generatePart() {
     // loosely based on:
     // https://github.com/openjdk/babylon/blob/490332b12e479d8a0c164cb32dab1def982d8fce/hat/hat/src/main/java/hat/ifacemapper/ByteCodeGenerator.java#L36
     var nonArrayGetters =
-        properties.entrySet().stream()
+        params.properties().entrySet().stream()
             .filter(entry -> !entry.getValue().type().isArray())
             .map(
                 entry ->
                     MethodHandleDesc.ofField(
                         DirectMethodHandleDesc.Kind.GETTER,
-                        classDesc,
+                        params.classDesc(),
                         entry.getValue().formattedName(),
                         entry.getValue().type()))
             .toList();
 
     var recipe =
-        properties.entrySet().stream()
+        params.properties().entrySet().stream()
             .map(
                 entry ->
                     entry.getValue().type().isArray()
@@ -62,7 +60,7 @@ record ToStringGenerator(
                             entry.getValue().type().arrayType().displayName(),
                             "[]")
                         : String.format("%s=\u0001", entry.getValue().formattedName()))
-            .collect(Collectors.joining(", ", classDesc.displayName() + "[", "]"));
+            .collect(Collectors.joining(", ", params.classDesc().displayName() + "[", "]"));
 
     DirectMethodHandleDesc bootstrap =
         ofCallsiteBootstrap(
@@ -73,7 +71,7 @@ record ToStringGenerator(
             CD_Object.arrayType());
 
     List<ClassDesc> getDescriptions =
-        properties.values().stream().map(Property::type).filter(it -> !it.isArray()).toList();
+        params.properties().values().stream().map(Property::type).filter(it -> !it.isArray()).toList();
 
     DynamicCallSiteDesc desc =
         DynamicCallSiteDesc.of(
@@ -82,7 +80,7 @@ record ToStringGenerator(
             MethodTypeDesc.of(CD_String, getDescriptions), // String, g0, g1, ...
             recipe);
 
-    classBuilder.withMethodBody(
+    params.classBuilder().withMethodBody(
         "toString",
         MethodTypeDesc.of(CD_String),
         ACC_PUBLIC | ACC_FINAL,
@@ -91,7 +89,7 @@ record ToStringGenerator(
             var name = nonArrayGetters.get(i).methodName();
             cob.aload(0);
             // Method gi:()?
-            cob.invokevirtual(classDesc, name, MethodTypeDesc.of(getDescriptions.get(i)));
+            cob.invokevirtual(params.classDesc(), name, MethodTypeDesc.of(getDescriptions.get(i)));
           }
           cob.invokedynamic(desc);
           cob.areturn();
