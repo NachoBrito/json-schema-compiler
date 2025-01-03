@@ -28,7 +28,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>22</maven.compiler.release>
+        <maven.compiler.release>23</maven.compiler.release>
         <json-schema-ref-parser-jvm.version>0.8.7</json-schema-ref-parser-jvm.version>
         <jcommander.version>2.0</jcommander.version>
         <native.maven.plugin.version>0.10.4</native.maven.plugin.version>
@@ -143,8 +143,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>22</source>
-                    <target>22</target>
+                    <source>23</source>
+                    <target>23</target>
                     <enablePreview>true</enablePreview>
                 </configuration>
             </plugin>

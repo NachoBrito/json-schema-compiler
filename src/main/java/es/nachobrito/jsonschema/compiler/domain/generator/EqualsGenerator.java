@@ -50,7 +50,7 @@ record EqualsGenerator(
               .if_null(returnFalse)
               // if (!(o instanceof *ThisClass*)) return false;
               .aload(1)
-              .instanceof_(params.classDesc())
+              .instanceOf(params.classDesc())
               .ifeq(returnFalse)
               // if (o == this) return true;
               .aload(0)
