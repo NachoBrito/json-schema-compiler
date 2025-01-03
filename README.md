@@ -44,8 +44,7 @@ If your system is not listed here, you can generate your own image by:
 2. Cloning this repository a
 3. Running the [create_image.sh](./create-image.sh) script
 
-The script will build and image for your current operating system and architecture, and put it in the `bin/local`
-folder.
+The script will build and image for your current operating system and architecture as  `target/json-schema-compiler`.
 
 ### 2. Compile json schema files
 
