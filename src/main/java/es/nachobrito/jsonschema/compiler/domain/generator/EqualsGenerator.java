@@ -47,7 +47,7 @@ record EqualsGenerator(
           cob
               // if (o == null) return false;
               .aload(1)
-              .if_null(returnFalse)
+              .ifnull(returnFalse)
               // if (!(o instanceof *ThisClass*)) return false;
               .aload(1)
               .instanceOf(params.classDesc())
